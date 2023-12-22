@@ -1,0 +1,53 @@
+spring:
+  main:
+    banner-mode: off
+  task:
+    execution:
+      pool:
+        core-size: 6
+        max-size: 36
+        keep-alive: 60s
+        queue-capacity: 128
+      thread-name-prefix: worker-
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/test
+  codec:
+    max-in-memory-size: 100MB
+application:
+  base-url: "http://127.0.0.1"
+  auth:
+    password-regex: '^(?![a-zA-Z]+$)(?!\d+$)(?![^\da-zA-Z\s]+$).{6,16}$'
+    max-session: 3
+    # 有效期时长
+    duration: 30d
+    # 忘记密码
+    forget:
+      # 请求有效期
+      duration: 7d
+      base-url: "${application.base-url}/auth/forgetPassword"
+  media:
+    mongodb:
+      uri: mongodb://admin:123456@localhost:27017/media
+      database: media
+      media: media
+  files:
+    dir: data
+
+logging:
+  config: classpath:logback-spring.xml
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    banner: false
+server:
+  compression:
+    enabled: true
+    min-response-size: 2KB
+    mime-types: "*/*"
+  port: 8000
