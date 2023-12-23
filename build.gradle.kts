@@ -49,6 +49,9 @@ dependencies {
     // mongodb
     implementation("org.mongodb:mongodb-driver-sync:4.9.1")
 
+    //knife4j 接口文档
+    implementation ("com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.3.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
 }
