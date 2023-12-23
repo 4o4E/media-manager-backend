@@ -1,5 +1,7 @@
 package top.e404.media.controller.system
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,23 +18,28 @@ import top.e404.media.service.system.AuthService
 @Validated
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth 接口", description = "登录、注册、忘密、改密") // Knife4j 注解
 class AuthController {
     @set:Autowired
     lateinit var authService: AuthService
 
     @PostMapping("/login")
+    @Operation(summary = "登录")
     fun login(dto: LoginDto) = ResponseEntity.ok(authService.login(dto))
 
     @PostMapping("/register")
+    @Operation(summary = "注册")
     fun login(dto: RegisterDto) = ResponseEntity.ok(authService.register(dto))
 
     @PostMapping("/forgetPassword")
+    @Operation(summary = "忘密")
     fun forgetPassword(dto: ForgetPasswordDto) = ResponseEntity.status(
         if (authService.forgetPassword(dto)) HttpStatus.OK
         else HttpStatus.NOT_FOUND
     ).build<Unit>()
 
     @PostMapping("/resetPassword")
+    @Operation(summary = "改密")
     fun forgetPassword(dto: ResetPasswordDto): ResponseEntity<Unit> {
         authService.resetPassword(dto)
         return ResponseEntity.ok(null)
