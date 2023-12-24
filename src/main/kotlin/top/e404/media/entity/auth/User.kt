@@ -1,25 +1,37 @@
 package top.e404.media.entity.auth
 
 import com.baomidou.mybatisplus.annotation.*
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Null
 import jakarta.validation.constraints.Size
 import kotlinx.serialization.Serializable
 import top.e404.media.entity.SaveValid
 import top.e404.media.entity.UpdateValid
 
+@Schema(description = "用户")
 @Serializable
 data class UserDto(
+    @Schema(description = "用户id")
     @NotNull(message = "更新时必须", groups = [UpdateValid::class])
     val id: Long? = null,
+    @Schema(description = "用户名")
     @NotNull(message = "创建时必须", groups = [SaveValid::class])
     @Size(min = 3, max = 16, message = "用户名必须是3-16个字符长度")
-    val name: String? = null
+    val name: String? = null,
+    @Schema(description = "用户点数")
+    @Null(message = "创建时必须为空", groups = [SaveValid::class])
+    var point: Int? = null,
 )
 
+@Schema(description = "用户")
 @Serializable
 data class UserVo(
+    @Schema(description = "用户id")
     val id: Long?,
-    val name: String?
+    @Schema(description = "用户名")
+    val name: String?,
+    var point: Int? = null,
 )
 
 @Serializable

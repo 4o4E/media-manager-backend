@@ -81,7 +81,8 @@ class AuthServiceImpl : AuthService {
         if (!passwordRegex.matches(password)) throw SimplePasswordException
         val userDo = UserDo(
             name = username,
-            password = BCrypt.withDefaults().hashToString(12, base64Service.decode(password).toCharArray())
+            password = BCrypt.withDefaults().hashToString(12, base64Service.decode(password).toCharArray()),
+            point = 0
         )
         userService.save(userDo)
         val userId = userDo.id!!

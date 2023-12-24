@@ -11,7 +11,8 @@ interface FileService {
     fun getFileResourceBySha(sha: String): FileSystemResource?
     fun checkUpload(sha: String): Boolean
     fun upload(bytes: ByteArray): String
-    fun exists(sha: String): Boolean
+    fun exists(id: String): Boolean
+    fun allExists(ids: Iterable<String>): Boolean
 }
 
 @Service
@@ -40,6 +41,8 @@ class FileServiceImpl : FileService {
         return sha
     }
 
-    override fun exists(sha: String) =
-        filesDir.resolve("${sha.substring(0, 2)}/${sha.substring(2, 4)}/${sha.substring(4)}").exists()
+    override fun exists(id: String) =
+        filesDir.resolve("${id.substring(0, 2)}/${id.substring(2, 4)}/${id.substring(4)}").exists()
+
+    override fun allExists(ids: Iterable<String>) = ids.all(::exists)
 }

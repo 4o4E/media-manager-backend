@@ -1,5 +1,9 @@
 package top.e404.media.controller.api
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.ResponseEntity
@@ -9,30 +13,30 @@ import top.e404.media.service.FileService
 
 @RestController
 @RequestMapping("/api/file")
+@Tag(name = "file", description = "静态文件接口")
 class FileController {
     @Autowired
     lateinit var fileService: FileService
 
-    @GetMapping("/{sha}")
+    @GetMapping("/{id}")
     @CheckPerm("file:get")
-    fun getById(@PathVariable sha: String): ResponseEntity<FileSystemResource> {
-        val resource = fileService.getFileResourceBySha(sha) ?: return ResponseEntity.notFound().build()
+    @Operation(summary = "通过文件id获取文件")
+    fun getById(@PathVariable @Parameter(description = "文件id") id: String): ResponseEntity<FileSystemResource> {
+        val resource = fileService.getFileResourceBySha(id) ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok().body(resource)
     }
 
     @PostMapping("/{sha}/exists")
     @CheckPerm("file:exists")
-    fun exists(@PathVariable sha: String): ResponseEntity<Void> {
-        if (fileService.checkUpload(sha)) {
-            return ResponseEntity.ok(null)
-        }
-        return ResponseEntity.notFound().build()
-    }
+    @Operation(summary = "通过文件id检查文件是否存在")
+    @ApiResponse(description = "若文件不存在则404")
+    fun exists(@PathVariable sha: String): ResponseEntity<Void> =
+        if (fileService.checkUpload(sha)) ResponseEntity.ok(null)
+        else ResponseEntity.notFound().build()
 
     @PutMapping("/")
     @CheckPerm("file:upload")
-    fun upload(@RequestPart file: ByteArray): ResponseEntity<String> {
-        println(file)
-        return ResponseEntity.ok(fileService.upload(file))
-    }
+    @Operation(summary = "上传文件")
+    @ApiResponse(description = "文件id")
+    fun upload(@RequestPart file: ByteArray): ResponseEntity<String> = ResponseEntity.ok(fileService.upload(file))
 }

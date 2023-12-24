@@ -16,7 +16,6 @@ java {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -31,6 +30,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
+    // knife4j
+    implementation("com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0")
+    // mybatis-plus
     implementation("com.baomidou:mybatis-plus-boot-starter:3.5.4.1")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

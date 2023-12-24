@@ -6,23 +6,16 @@ import org.bson.BsonDocument
 import org.bson.BsonString
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import top.e404.media.entity.message.Message
-import top.e404.media.entity.message.MessageData
-import top.e404.media.entity.message.MessageInfo
-import top.e404.media.entity.message.MessageType
-import top.e404.media.entity.message.meta.Meta
+import top.e404.media.advice.currentUser
+import top.e404.media.entity.message.*
 import top.e404.media.util.sha
 import top.e404.media.util.toMessageData
-import java.util.*
 
 
 interface MessageService {
     fun getById(id: String): MessageData?
     fun save(
-        chain: List<Message>,
-        upload: UUID,
-        tags: MutableSet<String>,
-        metas: MutableList<Meta>
+        dto: MessageDto
     ): MessageData
 }
 
@@ -30,27 +23,35 @@ interface MessageService {
 class MessageServiceImpl : MessageService {
     @Autowired
     lateinit var media: MongoCollection<BsonDocument>
+    @Autowired
+    lateinit var fileService: FileService
 
     @Autowired
     lateinit var kBson: KBson
 
     override fun getById(id: String): MessageData? = media
-        .find(BsonDocument("info.sha", BsonString(id)))
+        .find(BsonDocument("info.id", BsonString(id)))
         .firstOrNull()
         ?.toMessageData()
 
-    override fun save(
-        chain: List<Message>,
-        upload: UUID,
-        tags: MutableSet<String>,
-        metas: MutableList<Meta>
-    ): MessageData {
-        val sha = chain.sha()
-        val exists = media.find(BsonDocument("info.sha", BsonString(sha))).firstOrNull()
+    override fun save(dto: MessageDto): MessageData {
+        val (chain, tags) = dto
+        require(fileService.allExists(chain.filterIsInstance<BinaryMessage>().map(BinaryMessage::id))) { "消息中的二进制文件不存在" }
+        val id = chain.sha()
+        val upload = currentUser!!.user.id!!
+        val exists = media.find(BsonDocument("info.id", BsonString(id))).firstOrNull()
         if (exists != null) return kBson.load(MessageData.serializer(), exists)
 
         val data = MessageData(
-            MessageInfo(sha, upload, System.currentTimeMillis(), MessageType.byMessage(chain), false, tags, metas),
+            MessageInfo(
+                id = id,
+                upload = upload,
+                time = System.currentTimeMillis(),
+                type = MessageType.byMessage(chain),
+                approved = ApprovedState.WAIT,
+                tags = tags,
+                metas = mutableListOf()
+            ),
             chain
         )
 
