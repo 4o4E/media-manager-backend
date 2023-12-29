@@ -17,6 +17,43 @@ spring:
   codec:
     max-in-memory-size: 100MB
 application:
+  # 解密前端敏感数据的密钥
+  key:
+    private: >
+      MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCc8GcrnceUpIsJ
+      UAB87mkcbsK6Q0i7N1HTIbOhQeTDizG+ksirVA999z+PJI9fx7DnGmv8YFa5MkIP
+      kRifJl80ALdI3cO0kPvTJLjcpBDzjRusVcPLpGWpJwzERvRiyvtCImef1chSpSJu
+      0mhmxKPApMAhBogLDYpy7huysErY9Cr3srVeIyaI+h5NrZK0pG/sbKbnXSd4yQ/j
+      ZB0PDx1g+JddOcsPva9qezZLbMmvnB8ftBxMPIZ7HRz/C2V825ZtyWRnUClhygpO
+      JXc2sSL0XGdwx1ye3F5po0yPcx0zNRPTGrUtak41/RTZG6Gt8HYGJGMYldhHSwc2
+      Pf9pDlgZAgMBAAECggEAaFQMUdt2pOLppswvNt4KtCMRgl9eR07UL2X1ExtJ55Bu
+      BkFv8y1TiyrFbvQf9805Vbij1sd4f27gqZaMZqhMm7ZqIZ+DDVNghRGhbtQGjNHe
+      dqchHQxxpIxYGVcN+Wr0sxdKCeBFZmNuy3tGeiL4tQUQ0COWZrqesh6F/Tji2OwV
+      3hkjNbGCWWR6QurkgKWlCOe4YJizqRfXfvSLG9CdJfC56mTFgTTHj/tDQiYXiTrb
+      sayLEP6BvkVcj4BJtBt8eWFbj9XvBaem7XxMPmHl+atTOTYezKpz1r1lhJEe1Gy8
+      fz5w3RDiG9eUBC+JCzjgdB24qahV5OpyniZbaFbzAQKBgQDNNB6n9+qx8wjZ+dyM
+      6y3ACqKRB0hfJ1f/OhO0A1EmtdK5nLQigqAc3FGUzawoNkwod/sEbrtUYwnkF4GT
+      YS1IkuKlihv4JEQJg5dktH6Rco4wHS0Z4gkU5NNeAeJ6YYRl3yPEZhK8Z7hK6Exa
+      rB7Pg+TE3rKWR9EiS5I7TlINuQKBgQDDybsAqT5xXEC5bBJeAZQgsTVAGrSkxP2K
+      ERcMYo/KRCRqasT9mEW7AFQeayihzpImusKIGAU8qpG3UNfaWA5EhNYiagyBsnC1
+      /SVkkCJ0S0lCpYAWwcb/W0j84oE6DvY6d0+1cJWVetfOrxnWMG8MC9WNM3uekq4L
+      6AbjS8rNYQKBgQCDnPQ0o2wialC5DesJbyXO0INoJZWjgiaMioFsqdv4yhG3/uwC
+      Xmm3WQ/yMuBCgmDia+HR+/umqkcDxpfTITbcH2nC5wv9YbVJrN8DNkkfnKvZ7Dyr
+      JzDP99whpW/PMpCqji3wn89Qi+3GDaw7U74HNv8ZzgQZI0Ldjj7iTt+N8QKBgAb4
+      PnT2kWd9rjwrkbfQ/JHxXQDsMnQPIytwEk75jz7XECjNpjeU3R6cE2KF1At2jBNe
+      4J/xovYW6FsLQLPgIJnl1K2i8tEHJiYEXflnfCKBr5j0xUuKGGhsuntuIMWNVMye
+      BLNjz59joR0VdKkATmOyZCbDp2nstM9tshkTUKPhAoGACGsSMdB58+2euK9u1W9x
+      KbJZ8oX2BJEgjRzTfyKzza+R08oXHOBUYU1Ls86ynE4TxGKesz18MLIP4p/SYFX7
+      /9Ro0Y9JNtPYoy3hp7OVCN1FBSYSvpDGdOLHqqk5SMW7gIO5KyHAcnkbbzE+7Dai
+      5MTBx8kaPkLE8EZibKmTa10=
+    public: >
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnPBnK53HlKSLCVAAfO5p
+      HG7CukNIuzdR0yGzoUHkw4sxvpLIq1QPffc/jySPX8ew5xpr/GBWuTJCD5EYnyZf
+      NAC3SN3DtJD70yS43KQQ840brFXDy6RlqScMxEb0Ysr7QiJnn9XIUqUibtJoZsSj
+      wKTAIQaICw2Kcu4bsrBK2PQq97K1XiMmiPoeTa2StKRv7Gym510neMkP42QdDw8d
+      YPiXXTnLD72vans2S2zJr5wfH7QcTDyGex0c/wtlfNuWbclkZ1ApYcoKTiV3NrEi
+      9FxncMdcntxeaaNMj3MdMzUT0xq1LWpONf0U2RuhrfB2BiRjGJXYR0sHNj3/aQ5Y
+      GQIDAQAB
   base-url: "http://127.0.0.1"
   auth:
     password-regex: '^(?![a-zA-Z]+$)(?!\d+$)(?![^\da-zA-Z\s]+$).{6,16}$'

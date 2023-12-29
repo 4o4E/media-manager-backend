@@ -21,6 +21,14 @@ data class ResetPasswordDto(
 )
 
 @Serializable
+data class SetPasswordDto(
+    @NotNull
+    val old: String,
+    @NotNull
+    val new: String,
+)
+
+@Serializable
 @TableName("sys_user_forget_password")
 data class ForgetPasswordDo(
     @field:TableId(type = IdType.AUTO)

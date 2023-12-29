@@ -5,7 +5,7 @@ import org.bson.BsonDocument
 import org.springframework.beans.factory.annotation.Autowired
 import top.e404.media.entity.message.MessageData
 
-@Autowired
+@set:Autowired
 lateinit var kbson: KBson
 
 fun BsonDocument.toMessageData() = kbson.load(MessageData.serializer(), this)

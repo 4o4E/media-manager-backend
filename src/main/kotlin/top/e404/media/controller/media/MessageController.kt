@@ -1,0 +1,51 @@
+package top.e404.media.controller.media
+
+import io.swagger.v3.oas.annotations.Operation
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import top.e404.media.annontation.RequirePerm
+import top.e404.media.entity.message.MessageDto
+import top.e404.media.entity.message.MessageQueryDto
+import top.e404.media.entity.message.comment.MessageCommentDto
+import top.e404.media.entity.query.PageRequest
+import top.e404.media.service.media.MessageService
+
+@RestController
+@RequestMapping("/api/message")
+class MessageController {
+    @set:Autowired
+    lateinit var messageService: MessageService
+
+    @GetMapping("/{id}")
+    @RequirePerm("message:get")
+    @Operation(summary = "通过id获取message")
+    fun getById(@PathVariable id: String) = ResponseEntity.ok(messageService.getById(id))
+
+    @GetMapping
+    @RequirePerm("message:query")
+    @Operation(summary = "通过高级查询获取message")
+    fun query(dto: MessageQueryDto) = ResponseEntity.ok(messageService.query(dto))
+
+    @PutMapping
+    @RequirePerm("message:upload")
+    @Operation(summary = "上传message", description = "上传message前需要先上传二进制文件")
+    fun save(dto: MessageDto) = ResponseEntity.ok(messageService.save(dto))
+
+    // 评论
+
+    @GetMapping("/{id}/comment")
+    @Operation(summary = "获取评论")
+    fun listComment(
+        @PathVariable id: String,
+        page: PageRequest
+    ) = ResponseEntity.ok(messageService.getComment(id, page))
+
+    @PutMapping("/{id}/comment")
+    @RequirePerm("messageComment:upload")
+    @Operation(summary = "发送评论")
+    fun addComment(
+        @PathVariable id: String,
+        dto: MessageCommentDto
+    ) = ResponseEntity.ok(messageService.addComment(id, dto))
+}

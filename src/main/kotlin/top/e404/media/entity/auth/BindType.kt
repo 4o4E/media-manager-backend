@@ -12,7 +12,7 @@ import top.e404.media.util.primitive
  *
  * @property code 对应的绑定在数据库中的字段
  */
-@Serializable(BindTypeSerializer::class)
+@Serializable(BindType.BindTypeSerializer::class)
 enum class BindType(val code: Int) {
     EMAIL(1),
     PHONE(2);
@@ -20,10 +20,10 @@ enum class BindType(val code: Int) {
     companion object {
         fun byCode(code: Int) = entries.first { it.code == code }
     }
-}
 
-object BindTypeSerializer : KSerializer<BindType> {
-    override val descriptor = primitive(PrimitiveKind.INT)
-    override fun deserialize(decoder: Decoder) = BindType.byCode(decoder.decodeInt())
-    override fun serialize(encoder: Encoder, value: BindType) = encoder.encodeInt(value.code)
+    internal object BindTypeSerializer : KSerializer<BindType> {
+        override val descriptor = primitive(PrimitiveKind.INT)
+        override fun deserialize(decoder: Decoder) = BindType.byCode(decoder.decodeInt())
+        override fun serialize(encoder: Encoder, value: BindType) = encoder.encodeInt(value.code)
+    }
 }

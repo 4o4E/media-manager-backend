@@ -1,6 +1,6 @@
 package top.e404.media.util
 
-import top.e404.media.entity.message.Message
+import top.e404.media.entity.message.data.Message
 import top.e404.media.entity.message.MessageVisitor
 
 fun Iterable<Message>.sha() = MessageVisitor().also {

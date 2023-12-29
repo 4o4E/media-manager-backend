@@ -2,6 +2,7 @@ package top.e404.media.entity.message
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
+import top.e404.media.entity.message.data.Message
 
 @Schema(description = "消息上传")
 @Serializable

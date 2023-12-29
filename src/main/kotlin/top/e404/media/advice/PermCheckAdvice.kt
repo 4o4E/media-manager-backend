@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import top.e404.media.annontation.CheckPerm
+import top.e404.media.annontation.RequirePerm
 import top.e404.media.exception.AuthorizationExpireException
 import top.e404.media.exception.PermissionDeniedException
 import top.e404.media.exception.UnauthorizedException
@@ -24,7 +24,7 @@ class PermCheckAdvice {
      */
     @Before("@annotation(ann)")
     @Order(1)
-    private fun checkPerm(joinPoint: JoinPoint, ann: CheckPerm) {
+    private fun checkPerm(joinPoint: JoinPoint, ann: RequirePerm) {
         if (ann.perms.isEmpty()) return
         val current = currentUser ?: throw UnauthorizedException
         if (current.isExpire) throw AuthorizationExpireException

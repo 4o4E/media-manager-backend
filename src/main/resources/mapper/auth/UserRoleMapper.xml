@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.e404.media.mapper.RolePermMapper">
+<mapper namespace="top.e404.media.mapper.UserMapper">
 
-    <resultMap id="BaseResultMap" type="top.e404.media.entity.auth.RolePermDo">
+    <resultMap id="BaseResultMap" type="top.e404.media.entity.auth.UserRoleDo">
         <constructor>
-            <arg name="role" column="role" jdbcType="BIGINT"/>
-            <arg name="perm" column="perm" jdbcType="VARCHAR"/>
+            <arg name="userId" column="user_id" jdbcType="BIGINT"/>
+            <arg name="roleId" column="role_id" jdbcType="BIGINT"/>
 
             <arg name="version" column="version" jdbcType="BIGINT"/>
             <arg name="createBy" column="create_by" jdbcType="BIGINT"/>

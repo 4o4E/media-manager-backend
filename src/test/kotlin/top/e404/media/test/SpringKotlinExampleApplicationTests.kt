@@ -18,8 +18,8 @@ import top.e404.media.entity.auth.UserDto
     classes = [MediaManagerApplication::class]
 )
 class SpringKotlinExampleApplicationTests {
-    @Autowired
-    private lateinit var webTestClient: WebTestClient
+    @set:Autowired
+    lateinit var webTestClient: WebTestClient
 
     @Test
     fun testGet() {

@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.e404.media.entity.auth.ForgetPasswordDto
-import top.e404.media.entity.auth.LoginDto
-import top.e404.media.entity.auth.RegisterDto
-import top.e404.media.entity.auth.ResetPasswordDto
+import top.e404.media.entity.auth.*
 import top.e404.media.service.system.AuthService
+import top.e404.media.service.util.RsaService
 
 @Validated
 @RestController
@@ -22,6 +21,13 @@ import top.e404.media.service.system.AuthService
 class AuthController {
     @set:Autowired
     lateinit var authService: AuthService
+
+    @set:Autowired
+    lateinit var rsaService: RsaService
+
+    @GetMapping("/key")
+    @Operation(summary = "获取rsa公钥, 用于客户端加密敏感数据")
+    fun key() = ResponseEntity.ok(rsaService.publicKeyString)
 
     @PostMapping("/login")
     @Operation(summary = "登录")
@@ -42,6 +48,13 @@ class AuthController {
     @Operation(summary = "重置密码")
     fun forgetPassword(dto: ResetPasswordDto): ResponseEntity<Unit> {
         authService.resetPassword(dto)
+        return ResponseEntity.ok(null)
+    }
+
+    @PostMapping("/setPassword")
+    @Operation(summary = "修改密码")
+    fun setPassword(dto: SetPasswordDto): ResponseEntity<Unit> {
+        authService.setPassword(dto)
         return ResponseEntity.ok(null)
     }
 }

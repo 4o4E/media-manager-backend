@@ -14,10 +14,10 @@ import top.e404.media.entity.auth.RoleDo
 import top.e404.media.entity.auth.RolePermDo
 import top.e404.media.entity.auth.UserDo
 import top.e404.media.entity.auth.UserTokenDo
-import top.e404.media.service.RolePermService
-import top.e404.media.service.RoleService
-import top.e404.media.service.UserService
-import top.e404.media.service.UserTokenService
+import top.e404.media.service.database.RolePermService
+import top.e404.media.service.database.RoleService
+import top.e404.media.service.database.UserService
+import top.e404.media.service.database.UserTokenService
 
 
 /**
