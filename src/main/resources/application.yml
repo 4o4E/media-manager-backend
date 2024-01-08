@@ -66,6 +66,8 @@ application:
       duration: 7d
       base-url: "${application.base-url}/auth/forgetPassword"
   media:
+    tag:
+      rule: "^[^,\\|/$!\\s]+$"
     mongodb:
       uri: mongodb://admin:123456@localhost:27017/media
       database: media

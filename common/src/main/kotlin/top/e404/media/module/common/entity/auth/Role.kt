@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.baomidou.mybatisplus.annotation.Version
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -28,15 +29,23 @@ data class RoleDo(
 
 
 @Serializable
+@Schema(description = "用户角色")
 data class RoleDto(
+    @Schema(description = "角色id")
     var id: Long? = null,
+    @Schema(description = "角色名字")
     var name: String? = null,
+    @Schema(description = "角色备注")
     var description: String? = null,
 )
 
 @Serializable
+@Schema(description = "用户角色")
 data class RoleVo(
+    @Schema(description = "角色id")
     var id: Long? = null,
+    @Schema(description = "角色名字")
     var name: String? = null,
+    @Schema(description = "角色备注")
     var description: String? = null,
 )

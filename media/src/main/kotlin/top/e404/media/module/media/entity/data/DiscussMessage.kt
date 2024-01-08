@@ -9,24 +9,12 @@ import top.e404.media.module.media.entity.MessageVisitor
  */
 @Serializable
 @SerialName(DiscussMessage.IDENTIFY)
-class DiscussMessage : ArrayList<SpeakMessage>, Message {
+data class DiscussMessage(val content: List<SpeakMessage>) : Message {
     companion object {
         const val IDENTIFY = "discuss"
     }
 
-    @Suppress("UNUSED")
-    constructor(initialCapacity: Int) : super(initialCapacity)
-
-    @Suppress("UNUSED")
-    constructor() : super()
-
-    @Suppress("UNUSED")
-    constructor(c: MutableCollection<out SpeakMessage>) : super(c)
-
-    @Suppress("UNUSED")
-    constructor(vararg c: SpeakMessage) : super(c.toMutableList())
-
     override fun sign(visitor: MessageVisitor) {
-        for (message in this) message.sign(visitor)
+        for (message in content) message.sign(visitor)
     }
 }

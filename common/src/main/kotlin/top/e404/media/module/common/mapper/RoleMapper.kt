@@ -9,9 +9,12 @@ import top.e404.media.module.common.entity.auth.RoleDo
 interface RoleMapper : BaseMapper<RoleDo> {
     @Select(
         """SELECT r.* FROM sys_role r WHERE r.id IN (
-        SELECT ur.role_id FROM sys_user_role ur WHERE ur.user_id = #{userId}
-    )
-    """
+            SELECT ur.role_id FROM sys_user_role ur WHERE ur.user_id = #{userId}
+        )
+        """
     )
     fun getByUserId(userId: Long): List<RoleDo>
+
+    @Select("SELECT * FROM sys_role_perm WHERE role = #{roleId}")
+    fun getPermByRoleId(roleId: Long): List<String>
 }

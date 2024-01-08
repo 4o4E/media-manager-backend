@@ -1,21 +1,31 @@
 package top.e404.media.module.common.entity.auth
 
 import com.baomidou.mybatisplus.annotation.*
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Schema(description = "用户绑定")
 data class UserBindDto(
+    @Schema(description = "绑定记录id")
     var id: Long? = null,
+    @Schema(description = "用户id")
     var userId: Long? = null,
+    @Schema(description = "绑定类型")
     var type: BindType? = null,
+    @Schema(description = "绑定具体数值 邮箱/手机号")
     var value: String? = null,
 )
 
 @Serializable
 data class UserBindVo(
+    @Schema(description = "绑定记录id")
     var id: Long? = null,
+    @Schema(description = "用户id")
     var userId: Long? = null,
+    @Schema(description = "绑定类型")
     var type: BindType? = null,
+    @Schema(description = "绑定具体数值 邮箱/手机号")
     var value: String? = null,
 )
 

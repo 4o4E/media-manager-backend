@@ -50,13 +50,16 @@ enum class MessageType(vararg val format: String) {
 
     companion object {
         fun byMessage(chain: Collection<Message>): MessageType {
-            require(chain.isNotEmpty())
+            require(chain.isNotEmpty()) { "最少包含一条消息" }
             if (chain.size != 1) return COMPOSITE
-            return when (val m = chain.first()) {
+            return when (chain.first()) {
                 is TextMessage -> TEXT
-                is BinaryMessage -> entries.firstOrNull { it.format.contains(m.format) } ?: FILE
+                is BinaryMessage -> FILE
                 is DiscussMessage -> DISCUSS
                 is SpeakMessage -> SPEAK
+                is ImageMessage -> IMAGE
+                is VideoMessage -> VIDEO
+                is AudioMessage -> AUDIO
             }
         }
     }

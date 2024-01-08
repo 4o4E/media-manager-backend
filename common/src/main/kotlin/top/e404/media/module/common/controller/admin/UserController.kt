@@ -2,15 +2,18 @@ package top.e404.media.module.common.controller.admin
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.annontation.RequirePerm
+import top.e404.media.module.common.entity.UpdateValid
 import top.e404.media.module.common.entity.auth.*
 import top.e404.media.module.common.service.database.UserService
+import top.e404.media.module.common.util.copyAs
 
 @Validated
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/admin/user")
 class UserController {
     @set:Autowired
     lateinit var userService: UserService
@@ -18,17 +21,41 @@ class UserController {
     @GetMapping("/{id}")
     @RequirePerm("user:get")
     @Operation(summary = "通过id获取用户信息")
-    fun getById(@PathVariable id: Long): UserDo? {
-        return userService.getById(id)
+    fun getUserById(@PathVariable id: Long): ResponseEntity<UserDo> {
+        return ResponseEntity.ok(userService.getById(id))
+    }
+
+    @GetMapping("/{id}/roles")
+    @RequirePerm("user:get")
+    @Operation(summary = "通过id获取用户角色信息")
+    fun getRoleById(@PathVariable id: Long): ResponseEntity<List<UserRoleVo>> {
+        return ResponseEntity.ok(userService.getRoleById(id).map { it.copyAs(UserRoleVo::class) })
+    }
+
+    @PutMapping("/{userId}/roles/{roleId}")
+    @RequirePerm("user:edit")
+    @Operation(summary = "通过id修改用户角色信息")
+    fun putRoleForUser(
+        @PathVariable userId: Long,
+        @PathVariable roleId: Long
+    ): ResponseEntity<List<UserRoleVo>> {
+        return ResponseEntity.ok(userService.getRoleById(userId).map { it.copyAs(UserRoleVo::class) })
+    }
+
+    @GetMapping("/{id}/perms")
+    @RequirePerm("user:get")
+    @Operation(summary = "通过id获取用户权限信息")
+    fun getPermById(@PathVariable id: Long): ResponseEntity<List<RolePermVo>> {
+        return ResponseEntity.ok(userService.getPermById(id).map { it.copyAs(RolePermVo::class) })
     }
 
     @PostMapping
     @RequirePerm("user:save")
     @Operation(summary = "创建用户")
-    fun save(@RequestBody @Validated dto: UserDto): UserVo {
-        val userDo = dto.toDo()
+    fun save(@RequestBody @Validated dto: UserDto): ResponseEntity<UserVo> {
+        val userDo = dto.copyAs(UserDo::class)
         userService.save(userDo)
-        return userDo.toVo()
+        return ResponseEntity.ok(userDo.copyAs(UserVo::class))
     }
 
     @DeleteMapping("/{id}")
@@ -41,9 +68,9 @@ class UserController {
     @PatchMapping
     @RequirePerm("user:update")
     @Operation(summary = "更新用户数据")
-    fun update(@RequestBody @Validated dto: UserDto): UserVo {
-        val userDo = dto.toDo()
+    fun update(@RequestBody @Validated(UpdateValid::class) dto: UserDto): UserVo {
+        val userDo = dto.copyAs(UserDo::class)
         userService.updateById(userDo)
-        return userDo.toVo()
+        return userDo.copyAs(UserVo::class)
     }
 }

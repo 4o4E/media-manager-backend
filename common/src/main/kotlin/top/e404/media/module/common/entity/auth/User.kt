@@ -58,6 +58,3 @@ data class UserDo(
     @field:TableField(fill = FieldFill.INSERT_UPDATE)
     var updateTime: Long? = null,
 )
-
-fun UserDo.toVo() = UserVo(this.id, this.name)
-fun UserDto.toDo() = UserDo(this.id, this.name)

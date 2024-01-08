@@ -56,7 +56,7 @@ class CurrentUserAdvice {
             )
         } ?: return joinPoint.proceed()
         val userDo = userService.getById(tokenDo.id!!)
-        val roles = roleService.getRoleById(tokenDo.id!!).toSet()
+        val roles = roleService.getRoleByUserId(tokenDo.id!!).toSet()
         val perms = rolePermService.list(
             LambdaQueryWrapper<RolePermDo>()
                 .select(RolePermDo::role, RolePermDo::perm)

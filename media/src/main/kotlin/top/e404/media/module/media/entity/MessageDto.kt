@@ -7,7 +7,7 @@ import top.e404.media.module.media.entity.data.Message
 @Schema(description = "消息上传")
 @Serializable
 data class MessageDto(
-    @Schema(description = "消息的具体诗句")
+    @Schema(description = "消息的具体数据")
     val chain: List<Message>,
     @Schema(description = "该消息的tag")
     val tags: MutableSet<String>

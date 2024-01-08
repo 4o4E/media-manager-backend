@@ -127,14 +127,12 @@ class AuthServiceImpl : AuthService {
         return true
     }
 
-    @Suppress("UNUSED_PARAMETER")
     private fun sendEmail(to: String, url: String) {
-        // TODO send email
+        println("邮箱验证: $to, url: $url")
     }
 
-    @Suppress("UNUSED_PARAMETER")
     private fun sendSms(to: String, url: String) {
-        // TODO send sms
+        println("短信验证: $to, url: $url")
     }
 
     override fun resetPassword(dto: ResetPasswordDto) {

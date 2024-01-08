@@ -1,5 +1,6 @@
 package top.e404.media.module.common.entity.auth
 
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -12,9 +13,13 @@ import top.e404.media.module.common.util.primitive
  *
  * @property code 对应的绑定在数据库中的字段
  */
+
+@Schema(description = "用户绑定类型")
 @Serializable(BindType.BindTypeSerializer::class)
 enum class BindType(val code: Int) {
+    @Schema(description = "邮件")
     EMAIL(1),
+    @Schema(description = "短信")
     PHONE(2);
 
     companion object {

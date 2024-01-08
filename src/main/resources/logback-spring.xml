@@ -115,14 +115,16 @@
         <logger name="org.springframework.web" level="info"/>
         <logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>
     -->
-    <logger name="org.mongodb.driver.cluster" level="info"/>
-    <logger name="org.mongodb" level="info"/>
-    <logger name="org.quartz" level="info"/>
-    <logger name="sun.rmi" level="info"/>
-    <logger name="java.io.serialization" level="info"/>
-    <logger name="javax.management" level="info"/>
-    <logger name="org.apache.tomcat" level="info"/>
-    <logger name="org.apache.catalina.session.ManagerBase" level="info"/>
+    <logger level="info" name="org.mongodb.driver.cluster"/>
+    <logger level="info" name="org.mongodb"/>
+    <logger level="info" name="org.quartz"/>
+    <logger level="info" name="sun.rmi"/>
+    <logger level="info" name="java.io.serialization"/>
+    <logger level="info" name="javax.management"/>
+    <logger level="info" name="org.apache.tomcat"/>
+    <logger level="info" name="org.apache.catalina.session.ManagerBase"/>
+    <logger level="info" name="com.zaxxer.hikari.pool.HikariPool"/>
+    <logger level="info" name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger"/>
 
     <!--
         使用mybatis的时候，sql语句是debug下才会打印，而这里我们只配置了info，所以想要查看sql语句的话，有以下两种操作：

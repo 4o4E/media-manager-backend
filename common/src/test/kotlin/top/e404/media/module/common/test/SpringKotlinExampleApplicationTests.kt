@@ -1,4 +1,4 @@
-package top.e404.media.test
+package top.e404.media.module.common.test
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

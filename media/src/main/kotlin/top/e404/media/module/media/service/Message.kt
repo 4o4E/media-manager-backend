@@ -8,6 +8,7 @@ import com.mongodb.client.result.UpdateResult
 import org.bson.BsonDocument
 import org.bson.BsonString
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import top.e404.media.module.common.advice.currentUser
 import top.e404.media.module.common.entity.query.PageRequest
@@ -125,18 +126,34 @@ class MessageServiceImpl : MessageService {
 
     override fun addTags(id: String, tags: Set<String>) = media.updateOne(
         bson("info.id", id),
-        bsonAddToSet("info.tags", bsonEach(bsonArray(tags)))
+        bsonAddToSet("info.tags", bsonEach(bsonArray(checkTag(tags))))
     )
 
     override fun setTags(id: String, tags: Set<String>) = media.updateOne(
         bson("info.id", id),
-        bsonSet("info.tags", bsonArray(tags))
+        bsonSet("info.tags", bsonArray(checkTag(tags)))
     )
 
     override fun delTags(id: String, tags: Set<String>) = media.updateOne(
         bson("info.id", id),
-        bsonPull("info.tags", bsonEach(bsonArray(tags)))
+
+        bsonPull("info.tags", bsonEach(bsonArray((tags))))
     )
+
+    @Value("\${application.media.tag.rule}")
+    lateinit var rule: String
+
+    private val ruleRegex by lazy { Regex(rule) }
+
+    /**
+     * 检查tag是否符合要求的正则
+     */
+    private fun checkTag(tags: Set<String>): Set<String> {
+        for (it in tags) {
+            require(ruleRegex.matches(it)) { "tag格式错误" }
+        }
+        return tags
+    }
 
     override fun addComment(id: String, dto: MessageCommentDto): MessageComment {
         val index = media.findOneAndUpdate(

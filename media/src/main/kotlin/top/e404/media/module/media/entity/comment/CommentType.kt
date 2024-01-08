@@ -1,5 +1,6 @@
 package top.e404.media.module.media.entity.comment
 
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -7,9 +8,12 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import top.e404.media.module.common.util.primitive
 
+@Schema(description = "评论的数据类型")
 @Serializable(CommentType.CommentTypeSerializer::class)
 enum class CommentType(val code: Int) {
+    @Schema(description = "Markdown")
     MARKDOWN(1),
+    @Schema(description = "HTML")
     HTML(2);
 
     companion object {

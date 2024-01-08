@@ -70,25 +70,25 @@ CREATE TABLE IF NOT EXISTS sys_role
     COLLATE utf8mb4_general_ci
     ENGINE InnoDB;
 
-CREATE TABLE IF NOT EXISTS sys_menu
-(
-    id          BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
-    title       VARCHAR(64)  NOT NULL COMMENT '菜单标题',
-    parent      BIGINT       NULL COMMENT '父菜单id',
-    path        VARCHAR(256) NOT NULL COMMENT '菜单组件路径',
-    icon        VARCHAR(64)  NOT NULL COMMENT '菜单图标, 仅在是文件夹时生效, 菜单应自己提供图标',
-    menu        BOOL         NOT NULL COMMENT '菜单类型, false-文件夹, true-菜单',
-
-    version     BIGINT       NOT NULL COMMENT '乐观锁',
-    create_by   BIGINT       NOT NULL COMMENT '创建者',
-    create_time BIGINT       NOT NULL COMMENT '创建于',
-    update_by   BIGINT       NOT NULL COMMENT '修改者',
-    update_time BIGINT       NOT NULL COMMENT '修改于',
-    FOREIGN KEY (parent) REFERENCES sys_menu (id)
-) COMMENT '菜单'
-    CHARSET UTF8MB4
-    COLLATE utf8mb4_general_ci
-    ENGINE InnoDB;
+# CREATE TABLE IF NOT EXISTS sys_menu
+# (
+#     id          BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+#     title       VARCHAR(64)  NOT NULL COMMENT '菜单标题',
+#     parent      BIGINT       NULL COMMENT '父菜单id',
+#     path        VARCHAR(256) NOT NULL COMMENT '菜单组件路径',
+#     icon        VARCHAR(64)  NOT NULL COMMENT '菜单图标, 仅在是文件夹时生效, 菜单应自己提供图标',
+#     menu        BOOL         NOT NULL COMMENT '菜单类型, false-文件夹, true-菜单',
+#
+#     version     BIGINT       NOT NULL COMMENT '乐观锁',
+#     create_by   BIGINT       NOT NULL COMMENT '创建者',
+#     create_time BIGINT       NOT NULL COMMENT '创建于',
+#     update_by   BIGINT       NOT NULL COMMENT '修改者',
+#     update_time BIGINT       NOT NULL COMMENT '修改于',
+#     FOREIGN KEY (parent) REFERENCES sys_menu (id)
+# ) COMMENT '菜单'
+#     CHARSET UTF8MB4
+#     COLLATE utf8mb4_general_ci
+#     ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS sys_user_role
 (

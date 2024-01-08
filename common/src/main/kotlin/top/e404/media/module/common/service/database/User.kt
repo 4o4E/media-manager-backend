@@ -27,7 +27,7 @@ class UserServiceImpl : UserService, ServiceImpl<UserMapper, UserDo>() {
     lateinit var rolePermService: RolePermService
 
     override fun getRoleById(id: Long): List<RoleDo> {
-        val roles = userRoleService.getRoleById(id).map { it.id!! }
+        val roles = userRoleService.getRoleByUserId(id).map { it.id!! }
         return roleService.list(
             LambdaQueryWrapper<RoleDo>()
                 .`in`(RoleDo::id, roles)
