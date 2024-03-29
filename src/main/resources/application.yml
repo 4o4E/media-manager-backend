@@ -10,10 +10,10 @@ spring:
         queue-capacity: 128
       thread-name-prefix: worker-
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: net.sf.log4jdbc.DriverSpy
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/test
+    url: jdbc:log4jdbc:mysql://localhost:3306/media
   codec:
     max-in-memory-size: 100MB
 application:
@@ -81,7 +81,7 @@ logging:
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   configuration:
-    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
   global-config:
     banner: false
 server:

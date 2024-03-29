@@ -20,18 +20,18 @@ CREATE TABLE IF NOT EXISTS sys_user
 
 CREATE TABLE IF NOT EXISTS sys_user_bind
 (
-    id          BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
-    user_id     BIGINT       NOT NULL COMMENT '用户id',
-    type        INT UNSIGNED NOT NULL COMMENT '绑定类型',
-    value       VARCHAR(128) NOT NULL COMMENT '绑定的具体值',
-    checked     BOOL         NOT NULL COMMENT '绑定是否已验证',
+    id          BIGINT           NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+    user_id     BIGINT           NOT NULL COMMENT '用户id',
+    type        TINYINT UNSIGNED NOT NULL COMMENT '绑定类型, 0邮箱, 1手机',
+    value       VARCHAR(128)     NOT NULL COMMENT '绑定的具体值',
+    checked     BOOL             NOT NULL COMMENT '绑定是否已验证',
 
-    deleted     BOOL         NOT NULL COMMENT '逻辑删除',
-    version     BIGINT       NOT NULL COMMENT '乐观锁',
-    create_by   BIGINT       NOT NULL COMMENT '创建者',
-    create_time BIGINT       NOT NULL COMMENT '创建于',
-    update_by   BIGINT       NOT NULL COMMENT '修改者',
-    update_time BIGINT       NOT NULL COMMENT '修改于',
+    deleted     BOOL             NOT NULL COMMENT '逻辑删除',
+    version     BIGINT           NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT           NOT NULL COMMENT '创建者',
+    create_time BIGINT           NOT NULL COMMENT '创建于',
+    update_by   BIGINT           NOT NULL COMMENT '修改者',
+    update_time BIGINT           NOT NULL COMMENT '修改于',
     FOREIGN KEY (user_id) REFERENCES sys_user (id)
 ) COMMENT '用户绑定'
     CHARSET UTF8MB4

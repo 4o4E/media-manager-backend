@@ -1,5 +1,6 @@
 rootProject.name = "media-manager-backend"
 include(
-    "common",
+    "system",
     "media",
+    "log4jdbc",
 )
