@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="false">
 
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
     <property name="log.path" value="logs"/>
     <property name="log.pattern.file" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %thread %logger{50} - %msg%n"/>
     <property name="log.pattern.console"
@@ -39,6 +41,17 @@
     <logger level="off" name="jdbc.sqltiming"/>
     <logger level="off" name="jdbc.resultset"/>
     <logger level="off" name="jdbc.connection"/>
+    <logger level="off" name="com.mysql.jdbc.Driver"/>
+    <logger level="off" name="com.baomidou.mybatisplus.core.injector.DefaultSqlInjector"/>
+
+    <logger level="warn" name="org.mongodb"/>
+    <logger level="warn" name="org.quartz"/>
+    <logger level="warn" name="org.apache.catalina"/>
+    <logger level="warn" name="org.springframework.scheduling.quartz"/>
+    <logger level="warn" name="org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext"/>
+    <logger level="warn" name="org.hibernate.validator.internal.util.Version"/>
+    <logger level="warn" name="org.apache.coyote.http11.Http11NioProtocol"/>
+
     <logger level="debug" name="top.e404" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
