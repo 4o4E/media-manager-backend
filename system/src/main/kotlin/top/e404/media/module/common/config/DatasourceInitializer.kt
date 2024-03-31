@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.Resource
 import org.springframework.jdbc.datasource.init.DataSourceInitializer
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
+import java.io.File
 import javax.sql.DataSource
 
 @Configuration
@@ -16,6 +17,6 @@ class CustomizeDataSourceInitializer {
     @Bean
     fun dataSourceInitializer(dataSource: DataSource) = DataSourceInitializer().apply {
         setDataSource(dataSource)
-        setDatabasePopulator(ResourceDatabasePopulator().apply { addScript(sqlScriptSchema) })
+        if (!File(InitRunner.INIT_FILE_NAME).exists()) setDatabasePopulator(ResourceDatabasePopulator().apply { addScript(sqlScriptSchema) })
     }
 }

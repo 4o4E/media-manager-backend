@@ -26,10 +26,10 @@ class InitRunner : ApplicationRunner {
     companion object {
         var inInitialize = false
             private set
+        const val INIT_FILE_NAME = ".init"
     }
 
     private val log = log()
-    private val initFileName = ".init"
 
     @set:Autowired
     lateinit var userService: UserService
@@ -46,7 +46,7 @@ class InitRunner : ApplicationRunner {
     @set:Autowired
     lateinit var applicationContext: WebApplicationContext
     override fun run(args: ApplicationArguments) {
-        if (File(initFileName).exists()) return
+        if (File(INIT_FILE_NAME).exists()) return
         inInitialize = true
         log.info("开始初始化")
         val userId = 1L
@@ -72,7 +72,7 @@ class InitRunner : ApplicationRunner {
         log.info("设置管理员角色拥有所有权限: $perms")
 
         val now = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
-        File(initFileName).writeText("初始化于$now")
+        File(INIT_FILE_NAME).writeText("初始化于$now")
         inInitialize = false
         log.info("完成初始化")
     }
