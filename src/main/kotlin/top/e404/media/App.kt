@@ -1,3 +1,5 @@
+@file:JvmName("Application")
+
 package top.e404.media
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
