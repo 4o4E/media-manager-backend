@@ -39,6 +39,7 @@ class ExceptionHandler {
     @ResponseBody
     protected fun exceptionHandler(e: CustomMessageException) = e.toResponseEntity.also {
         log.debug("responseBody: {}", it.body)
+        log.warn(e.message, e)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
