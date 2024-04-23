@@ -56,3 +56,18 @@ internal fun <T : Any, R : Any> T.copyAsImpl(
     }
     return pc.callBy(args)
 }
+
+/**
+ * @see copyAs
+ */
+inline fun <reified T : Any, reified R : Any> Iterable<T>.copyAsList(
+    to: KClass<R>,
+    vararg cover: Pair<String, Any?>
+) = copyAsListImpl(T::class, to, *cover)
+
+@PublishedApi
+internal fun <T : Any, R : Any> Iterable<T>.copyAsListImpl(
+    from: KClass<T>,
+    to: KClass<R>,
+    vararg cover: Pair<String, Any?>
+) = map { it.copyAsImpl(from, to, true, *cover)!! }

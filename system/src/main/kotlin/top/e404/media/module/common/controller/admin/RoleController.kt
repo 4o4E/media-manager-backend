@@ -4,18 +4,19 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.UpdateValid
 import top.e404.media.module.common.entity.auth.*
+import top.e404.media.module.common.entity.page.PageInfo
+import top.e404.media.module.common.entity.role.AddRoleDto
 import top.e404.media.module.common.exception.CustomMessageException
 import top.e404.media.module.common.service.database.RolePermService
 import top.e404.media.module.common.service.database.RoleService
-import top.e404.media.module.common.util.copyAs
-import top.e404.media.module.common.util.query
+import top.e404.media.module.common.util.*
 
 @Validated
 @RestController
@@ -29,36 +30,52 @@ class RoleController {
     lateinit var rolePermService: RolePermService
 
     @LogAccess
+    @GetMapping("/allPerm")
+    @RequirePerm()
+    @Operation(summary = "获取所有权限节点")
+    fun allPerm() = roleService.allPerm()
+
+    @LogAccess
+    @GetMapping("")
+    @RequirePerm("user:get")
+    @Operation(summary = "分页获取角色")
+    fun page(pageInfo: PageInfo) = roleService.page(pageInfo.toMybatisPage()).toPageResult {
+        it.copyAs(RoleVo::class)
+    }
+
+    @LogAccess
+    @GetMapping("/all")
+    @RequirePerm("user:get")
+    @Operation(summary = "获取所有角色")
+    fun list() = roleService.list().copyAsList(RoleVo::class)
+
+    @LogAccess
     @GetMapping("/{id}")
     @RequirePerm("role:get")
     @Operation(summary = "通过id获取角色信息")
-    fun getRoleById(@PathVariable id: Long): ResponseEntity<RoleDo> {
-        return ResponseEntity.ok(roleService.getById(id))
-    }
+    fun getRoleById(@PathVariable id: Long) = roleService.getById(id).copyAs(RoleVo::class)
 
     @LogAccess
     @GetMapping("/{id}/perms")
     @RequirePerm("role:get")
     @Operation(summary = "通过id获取角色所有权限节点")
-    fun getPermById(@PathVariable id: Long): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(roleService.getPermByRoleId(id))
-    }
+    fun getPermById(@PathVariable id: Long) = roleService.getPermByRoleId(id)
 
     @LogAccess
     @PostMapping("/{id}/perms/{perm}")
     @RequirePerm("role_perm:edit")
     @Operation(summary = "通过id为角色添加权限节点")
-    fun addPermById(@PathVariable id: Long, @PathVariable perm: String): ResponseEntity<RolePermVo> {
+    fun addPermById(@PathVariable id: Long, @PathVariable perm: String): RolePermVo {
         val rolePermDo = RolePermDo(id, perm)
         if (!rolePermService.save(rolePermDo)) throw CustomMessageException("没有对应的角色", HttpStatus.NOT_FOUND)
-        return ResponseEntity.ok(rolePermDo.copyAs(RolePermVo::class))
+        return rolePermDo.copyAs(RolePermVo::class)
     }
 
     @LogAccess
     @DeleteMapping("/{id}/perms/{perm}")
     @RequirePerm("role_perm:edit")
     @Operation(summary = "通过id为角色移除权限节点")
-    fun removePermById(@PathVariable id: Long, @PathVariable perm: String): ResponseEntity<RolePermVo> {
+    fun removePermById(@PathVariable id: Long, @PathVariable perm: String): RolePermVo {
         val rolePermDo = RolePermDo(id, perm)
         if (!rolePermService.remove(
                 query {
@@ -66,30 +83,33 @@ class RoleController {
                 }
             )
         ) throw CustomMessageException("没有对应的角色权限", HttpStatus.NOT_FOUND)
-        return ResponseEntity.ok(rolePermDo.copyAs(RolePermVo::class))
+        return rolePermDo.copyAs(RolePermVo::class)
     }
 
     @LogAccess
-    @PostMapping
+    @PostMapping("")
     @RequirePerm("role:save")
     @Operation(summary = "创建角色")
-    fun save(@RequestBody @Validated dto: RoleDto): ResponseEntity<RoleVo> {
+    fun save(@RequestBody @Validated dto: AddRoleDto): RoleVo {
         val roleDo = dto.copyAs(RoleDo::class)
         roleService.save(roleDo)
-        return ResponseEntity.ok(roleDo.copyAs(RoleVo::class))
+        return roleDo.copyAs(RoleVo::class)
     }
 
     @LogAccess
     @DeleteMapping("/{id}")
     @RequirePerm("role:remove")
     @Operation(summary = "删除角色")
-    fun remove(@PathVariable id: Long): ResponseEntity<Void> {
+    @Transactional
+    fun remove(@PathVariable id: Long) {
+        rolePermService.remove(query {
+            eq(RolePermDo::role, id)
+        })
         if (!roleService.remove(id)) throw CustomMessageException("没有对应的角色", HttpStatus.NOT_FOUND)
-        return ResponseEntity.ok().build()
     }
 
     @LogAccess
-    @PatchMapping
+    @PatchMapping("")
     @RequirePerm("role:update")
     @Operation(summary = "更新角色数据")
     fun update(@RequestBody @Validated(UpdateValid::class) dto: RoleDto): RoleVo {

@@ -20,6 +20,7 @@ import top.e404.media.module.common.util.primitive
 enum class BindType(@field:EnumValue val code: Int) {
     @Schema(description = "邮件")
     EMAIL(1),
+
     @Schema(description = "短信")
     PHONE(2);
 

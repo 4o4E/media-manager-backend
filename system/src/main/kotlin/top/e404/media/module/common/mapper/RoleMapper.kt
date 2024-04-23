@@ -15,6 +15,6 @@ interface RoleMapper : BaseMapper<RoleDo> {
     )
     fun getByUserId(userId: Long): List<RoleDo>
 
-    @Select("SELECT * FROM sys_role_perm WHERE role = #{roleId}")
+    @Select("SELECT rp.perm FROM sys_role_perm rp WHERE rp.role = #{roleId}")
     fun getPermByRoleId(roleId: Long): List<String>
 }

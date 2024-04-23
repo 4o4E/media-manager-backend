@@ -15,6 +15,9 @@ import java.security.MessageDigest
 import java.time.Duration
 
 interface UserTokenService : IService<UserTokenDo> {
+    /**
+     * 创建一个新的token
+     */
     fun generateToken(userDo: UserDo): UserTokenDo
 }
 

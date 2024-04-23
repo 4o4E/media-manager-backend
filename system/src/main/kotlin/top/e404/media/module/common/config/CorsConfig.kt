@@ -9,6 +9,9 @@ import org.springframework.web.filter.CorsFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
+/**
+ * 跨域配置
+ */
 @Configuration
 class CorsConfig : WebMvcConfigurer {
 
@@ -30,6 +33,7 @@ class CorsConfig : WebMvcConfigurer {
             addAllowedMethod(HttpMethod.GET)
             addAllowedMethod(HttpMethod.POST)
             addAllowedMethod(HttpMethod.PUT)
+            addAllowedMethod(HttpMethod.PATCH)
             addAllowedMethod(HttpMethod.DELETE)
             allowCredentials = true
             maxAge = 3600

@@ -2,9 +2,9 @@ package top.e404.media.module.common.util
 
 import org.slf4j.MDC
 
-private const val traceIdKey = "traceId"
+const val TRACE_ID_KEY = "traceId"
 var traceId: String?
-    get() = MDC.get(traceIdKey)
+    get() = MDC.get(TRACE_ID_KEY)
     set(value) {
-        MDC.put(traceIdKey, value)
+        MDC.put(TRACE_ID_KEY, value)
     }

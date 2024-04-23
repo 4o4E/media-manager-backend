@@ -13,6 +13,7 @@ import top.e404.media.module.common.util.primitive
 enum class CommentType(val code: Int) {
     @Schema(description = "Markdown")
     MARKDOWN(1),
+
     @Schema(description = "HTML")
     HTML(2);
 

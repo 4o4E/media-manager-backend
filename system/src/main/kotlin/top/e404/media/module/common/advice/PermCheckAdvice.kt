@@ -32,7 +32,7 @@ class PermCheckAdvice {
         // 缺失权限
         val lack = ann.perms.filter { it !in current.perms }
         if (lack.isNotEmpty()) {
-            log.warn("用户{}访问接口{}时缺失权限{}", current.user.name, joinPoint.signature.name, lack)
+            log.warn("缺失权限: {}", lack)
             throw PermissionDeniedException
         }
     }

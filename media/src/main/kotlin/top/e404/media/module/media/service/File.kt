@@ -4,14 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.FileSystemResource
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.security.MessageDigest
 
 interface FileService {
+    /**
+     * 通过sha获取文件
+     */
     fun getFileResourceBySha(sha: String): FileSystemResource?
-    fun checkUpload(sha: String): Boolean
-    fun upload(bytes: ByteArray): String
+
+    /**
+     * 上传文件
+     */
+    fun upload(file: MultipartFile): String
+
+    /**
+     * 检查文件是否存在
+     */
     fun exists(id: String): Boolean
+
+    /**
+     * 检查多个文件是否存在
+     */
     fun allExists(ids: Iterable<String>): Boolean
 }
 
@@ -27,17 +42,15 @@ class FileServiceImpl : FileService {
         else null
     }
 
-    override fun checkUpload(sha: String): Boolean {
-        return filesDir.resolve("${sha.substring(0, 2)}/${sha.substring(2, 4)}/${sha.substring(4)}").exists()
-    }
+    override fun upload(file: MultipartFile): String {
+        val bytes = file.bytes
 
-    override fun upload(bytes: ByteArray): String {
         @OptIn(ExperimentalStdlibApi::class)
         val sha = MessageDigest.getInstance("sha-256").digest(bytes).toHexString()
-        val file = filesDir.resolve("${sha.substring(0, 2)}/${sha.substring(2, 4)}/${sha.substring(4)}")
-        if (file.exists()) return sha
-        file.parentFile.mkdirs()
-        file.writeBytes(bytes)
+        val localFile = filesDir.resolve("${sha.substring(0, 2)}/${sha.substring(2, 4)}/${sha.substring(4)}")
+        if (localFile.exists()) return sha
+        localFile.parentFile.mkdirs()
+        localFile.writeBytes(bytes)
         return sha
     }
 

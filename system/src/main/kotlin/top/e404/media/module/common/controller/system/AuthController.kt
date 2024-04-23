@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.entity.auth.*
 import top.e404.media.module.common.service.system.AuthService
-import top.e404.media.module.common.service.util.RsaService
 
 @Validated
 @RestController
@@ -23,45 +22,35 @@ class AuthController {
     @set:Autowired
     lateinit var authService: AuthService
 
-    @set:Autowired
-    lateinit var rsaService: RsaService
-
-    @LogAccess
-    @GetMapping("/key")
-    @Operation(summary = "获取rsa公钥, 用于客户端加密敏感数据")
-    fun key() = ResponseEntity.ok(rsaService.publicKeyString)
-
     @LogAccess
     @PostMapping("/login")
     @Operation(summary = "登录")
-    fun login(dto: LoginDto) = ResponseEntity.ok(authService.login(dto))
+    fun login(@RequestBody dto: LoginDto) = authService.login(dto)
 
     @LogAccess
     @PostMapping("/register")
     @Operation(summary = "注册")
-    fun register(dto: RegisterDto) = ResponseEntity.ok(authService.register(dto))
+    fun register(@RequestBody dto: RegisterDto) = authService.register(dto)
 
     @LogAccess
     @PostMapping("/forgetPassword")
-    @Operation(summary = "忘记密码")
-    fun forgetPassword(dto: ForgetPasswordDto) = ResponseEntity.status(
+    @Operation(summary = "用户发起忘记密码申请")
+    fun forgetPassword(@RequestBody dto: ForgetPasswordDto) = ResponseEntity.status(
         if (authService.forgetPassword(dto)) HttpStatus.OK
         else HttpStatus.NOT_FOUND
     ).build<Unit>()
 
     @LogAccess
     @PostMapping("/resetPassword")
-    @Operation(summary = "重置密码")
-    fun forgetPassword(dto: ResetPasswordDto): ResponseEntity<Unit> {
+    @Operation(summary = "重置密码", description = "发送到短信/邮箱的重置链接, 链接走前端解析之后再发送请求到后端")
+    fun forgetPassword(@RequestBody dto: ResetPasswordDto) {
         authService.resetPassword(dto)
-        return ResponseEntity.ok(null)
     }
 
     @LogAccess
     @PostMapping("/setPassword")
     @Operation(summary = "修改密码")
-    fun setPassword(dto: SetPasswordDto): ResponseEntity<Unit> {
+    fun setPassword(@RequestBody dto: SetPasswordDto) {
         authService.setPassword(dto)
-        return ResponseEntity.ok(null)
     }
 }

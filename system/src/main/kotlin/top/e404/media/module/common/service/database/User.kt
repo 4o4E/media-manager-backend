@@ -11,7 +11,14 @@ import top.e404.media.module.common.mapper.UserMapper
 import top.e404.media.module.common.util.query
 
 interface UserService : IService<UserDo> {
+    /**
+     * 通过用户id查询其角色
+     */
     fun getRoleById(id: Long): List<RoleDo>
+
+    /**
+     * 通过用户id查询其权限
+     */
     fun getPermById(id: Long): Set<String>
 }
 
@@ -25,6 +32,7 @@ class UserServiceImpl : UserService, ServiceImpl<UserMapper, UserDo>() {
 
     @set:Autowired
     lateinit var rolePermService: RolePermService
+
 
     override fun getRoleById(id: Long): List<RoleDo> {
         val roles = userRoleService.getRoleByUserId(id).map { it.id!! }

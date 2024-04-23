@@ -21,6 +21,9 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * 初始化数据库数据
+ */
 @Component
 class InitRunner : ApplicationRunner {
     companion object {
@@ -45,6 +48,16 @@ class InitRunner : ApplicationRunner {
 
     @set:Autowired
     lateinit var applicationContext: WebApplicationContext
+
+    val perms by lazy {
+        applicationContext.getBean(RequestMappingHandlerMapping::class.java)
+            .handlerMethods
+            .values
+            .mapNotNull { it.getMethodAnnotation(RequirePerm::class.java) }
+            .flatMap { it.perms.asList() }
+            .toSet()
+    }
+
     override fun run(args: ApplicationArguments) {
         if (File(INIT_FILE_NAME).exists()) return
         inInitialize = true
@@ -60,16 +73,16 @@ class InitRunner : ApplicationRunner {
         )
         log.info("初始化数据, 新建管理员用户admin, 密码123456")
 
-        val mapping = applicationContext.getBean(RequestMappingHandlerMapping::class.java)
-        val perms = mapping.handlerMethods.values.mapNotNull {
-            it.getMethodAnnotation(RequirePerm::class.java)
-        }.flatMap { it.perms.asList() }.toSet()
-        val roleId = 1L
-        roleService.save(RoleDo(id = roleId, name = "admin", description = "超级管理员角色, 默认拥有所有权限"))
-        rolePermService.saveBatch(perms.map { perm -> RolePermDo(roleId, perm) })
+        val adminRoleId = 1L
+        val defaultRoleId = 2L
+
+        roleService.save(RoleDo(id = adminRoleId, name = "admin", description = "超级管理员角色, 默认拥有所有权限"))
+        rolePermService.saveBatch(perms.map { perm -> RolePermDo(adminRoleId, perm) })
         log.info("设置超级管理员角色拥有所有权限: $perms")
-        userRoleService.save(UserRoleDo(userId = userId, roleId = roleId))
+        userRoleService.save(UserRoleDo(userId = userId, roleId = adminRoleId))
         log.info("设置管理员角色拥有所有权限: $perms")
+
+        roleService.save(RoleDo(id = defaultRoleId, name = "default", description = "默认用户"))
 
         val now = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
         File(INIT_FILE_NAME).writeText("初始化于$now")

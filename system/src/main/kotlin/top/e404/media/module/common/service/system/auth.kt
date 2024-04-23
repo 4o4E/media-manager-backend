@@ -16,21 +16,43 @@ import top.e404.media.module.common.service.database.ForgetPasswordService
 import top.e404.media.module.common.service.database.UserBindService
 import top.e404.media.module.common.service.database.UserService
 import top.e404.media.module.common.service.database.UserTokenService
-import top.e404.media.module.common.service.util.RsaService
+import top.e404.media.module.common.util.copyAsList
+import top.e404.media.module.common.util.log
 import top.e404.media.module.common.util.query
 import java.security.MessageDigest
 import java.time.Duration
 
 interface AuthService {
+    /**
+     * 登录
+     */
     fun login(dto: LoginDto): LoginVo
+
+    /**
+     * 注册
+     */
     fun register(dto: RegisterDto): LoginVo
+
+    /**
+     * 忘记密码
+     */
     fun forgetPassword(dto: ForgetPasswordDto): Boolean
+
+    /**
+     * 重置密码
+     */
     fun resetPassword(dto: ResetPasswordDto)
+
+    /**
+     * 设置密码
+     */
     fun setPassword(dto: SetPasswordDto)
 }
 
 @Service
 class AuthServiceImpl : AuthService {
+    private val log = log()
+
     @Value("\${application.auth.password-regex}")
     lateinit var regex: String
 
@@ -55,29 +77,30 @@ class AuthServiceImpl : AuthService {
     lateinit var forgetPasswordService: ForgetPasswordService
 
     @set:Autowired
-    lateinit var rsaService: RsaService
-
-    @set:Autowired
     lateinit var executor: ThreadPoolTaskExecutor
 
     override fun login(dto: LoginDto): LoginVo {
-        // 通过邮箱或手机登录
-        // 没有该用户
-        val bind = userBindService.getOne(query {
-            eq(UserBindDo::value, dto.username)
-            eq(UserBindDo::deleted, false)
-        }) ?: throw WrongPasswordException
-        val userId = bind.userId!!
-        val user = userService.getById(userId)
+        val user = userService.getOne(query {
+            eq(UserDo::name, dto.username)
+            eq(UserDo::deleted, false)
+        }) ?: run {
+            log.warn("没有对应的用户: {}", dto.username)
+            throw WrongPasswordException
+        }
+        val userId = user.id!!
         // 检查密码
         val result = BCrypt.verifyer().verify(dto.password.toCharArray(), user.password!!)
         // 密码错误
-        if (!result.verified) throw WrongPasswordException
+        if (!result.verified) {
+            log.warn("密码错误: {}", dto)
+            throw WrongPasswordException
+        }
         val token = userTokenService.generateToken(user)
         val perms = userService.getPermById(userId)
+        val roles = userService.getRoleById(userId).copyAsList(RoleVo::class)
 
         // 现有token
-        return LoginVo(userId, token.token!!, token.expireTime!!, perms)
+        return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -94,13 +117,14 @@ class AuthServiceImpl : AuthService {
         userBindService.save(UserBindDo(userId = userId, type = type, value = value, checked = false))
         val token = userTokenService.generateToken(userDo)
         val perms = userService.getPermById(userId)
-        return LoginVo(userId, token.token!!, token.expireTime!!, perms)
+        val roles = userService.getRoleById(userId).copyAsList(RoleVo::class)
+        return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
     }
 
     override fun forgetPassword(dto: ForgetPasswordDto): Boolean {
         // 检查是否有对应账号
         val bindDo = userBindService.getOne(query {
-            eq(UserBindDo::type, dto.type.code)
+            eq(UserBindDo::type, dto.type)
             eq(UserBindDo::value, dto.value)
         }) ?: return false
 

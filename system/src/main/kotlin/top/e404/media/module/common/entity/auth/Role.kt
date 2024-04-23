@@ -1,15 +1,13 @@
 package top.e404.media.module.common.entity.auth
 
-import com.baomidou.mybatisplus.annotation.FieldFill
-import com.baomidou.mybatisplus.annotation.TableField
-import com.baomidou.mybatisplus.annotation.TableName
-import com.baomidou.mybatisplus.annotation.Version
+import com.baomidou.mybatisplus.annotation.*
 import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
 
 @Serializable
 @TableName("sys_role")
 data class RoleDo(
+    @field:TableId(type = IdType.AUTO)
     var id: Long? = null,
     var name: String? = null,
     var description: String? = null,

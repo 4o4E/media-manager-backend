@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import top.e404.media.module.common.advice.currentUser
-import top.e404.media.module.common.entity.query.PageRequest
-import top.e404.media.module.media.util.sha
+import top.e404.media.module.common.entity.page.PageInfo
 import top.e404.media.module.media.entity.MessageData
 import top.e404.media.module.media.entity.MessageDto
 import top.e404.media.module.media.entity.MessageQueryDto
@@ -25,7 +24,6 @@ import top.e404.media.module.media.entity.info.ApprovedState
 import top.e404.media.module.media.entity.info.MessageInfo
 import top.e404.media.module.media.entity.info.MessageType
 import top.e404.media.module.media.util.*
-import top.e404.media.module.media.util.toMessageData
 
 
 interface MessageService {
@@ -63,7 +61,16 @@ interface MessageService {
      * 发送评论
      */
     fun addComment(id: String, dto: MessageCommentDto): MessageComment
-    fun getComment(id: String, page: PageRequest): List<MessageComment>
+
+    /**
+     * 获取评论
+     */
+    fun getComment(id: String, page: PageInfo): List<MessageComment>
+
+    /**
+     * 分页获取
+     */
+    fun random(count: Long): List<MessageData>
 }
 
 @Service
@@ -84,12 +91,12 @@ class MessageServiceImpl : MessageService {
 
     override fun query(dto: MessageQueryDto): List<MessageData> {
         val query = when (dto.queryMode) {
-            QueryMode.ANY -> bson("info.id", bsonIn(bsonArray(dto.tags)))
-            QueryMode.ALL -> bson("info.id", bsonAny(bsonArray(dto.tags)))
+            QueryMode.ANY -> bson("info.tags", bsonIn(bsonArray(dto.tags)))
+            QueryMode.ALL -> bson("info.tags", bsonAll(bsonArray(dto.tags)))
         }
         return media
             .find(query)
-            .projection(bson("comment", 0))
+            // .projection(bson("comment", 0))
             .limit(dto.count)
             .map(BsonDocument::toMessageData)
             .toList()
@@ -172,17 +179,25 @@ class MessageServiceImpl : MessageService {
         return comment
     }
 
-    override fun getComment(id: String, page: PageRequest) = media.aggregate(
+    override fun getComment(id: String, page: PageInfo) = media.aggregate(
         mutableListOf(
             bsonMatch(bson("info.id", id)),
             bson().deepPut(
                 "\$project", "list", "\$slice",
                 value = bsonArray(
                     bson("\$comment.list"),
-                    bson(page.pageNum * page.pageSize),
-                    bson(page.pageSize)
+                    bson(page.page * page.size),
+                    bson(page.size)
                 )
             )
         )
     ).map { kBson.parse(MessageComment.serializer(), it) }.toList()
+
+    override fun random(count: Long): List<MessageData> {
+        return media.aggregate(
+            mutableListOf(
+                bsonSample(count)
+            )
+        ).map { kBson.parse(MessageData.serializer(), it) }.toList()
+    }
 }

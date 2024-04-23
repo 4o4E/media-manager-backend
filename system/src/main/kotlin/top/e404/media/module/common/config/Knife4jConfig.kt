@@ -6,6 +6,9 @@ import org.springdoc.core.models.GroupedOpenApi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
+/**
+ * 配置knife4j
+ */
 @Configuration
 class Knife4jConfig {
     @get:Bean
@@ -15,8 +18,10 @@ class Knife4jConfig {
         .build()
 
     @get:Bean
-    val openAPI: OpenAPI = OpenAPI().info(Info()
-        .title("media-manager")
-        .description("media-manager")
-        .version("1.0"))
+    val openAPI: OpenAPI = OpenAPI().info(
+        Info()
+            .title("media-manager")
+            .description("media-manager")
+            .version("1.0")
+    )
 }

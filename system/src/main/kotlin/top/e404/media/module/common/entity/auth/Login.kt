@@ -24,6 +24,8 @@ data class LoginVo(
     val token: String,
     @Schema(description = "用户token过期时间戳")
     val expire: Long,
+    @Schema(description = "用户拥有的角色")
+    val roles: List<RoleVo>,
     @Schema(description = "用户拥有的权限")
     val perms: Set<String>,
 )

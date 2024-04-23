@@ -13,8 +13,10 @@ import top.e404.media.module.common.util.primitive
 enum class ApprovedState(val code: Int) {
     @Schema(description = "等待审核")
     WAIT(1),
+
     @Schema(description = "通过审核")
     PASS(2),
+
     @Schema(description = "未通过审核")
     REJECT(3);
 

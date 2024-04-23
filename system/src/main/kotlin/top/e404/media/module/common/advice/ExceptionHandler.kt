@@ -1,6 +1,7 @@
 package top.e404.media.module.common.advice
 
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -9,6 +10,9 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import top.e404.media.module.common.exception.CustomMessageException
 
+/**
+ * 全局异常处理器 用于处理所有未处理的异常
+ */
 @RestControllerAdvice
 class ExceptionHandler {
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -35,6 +39,10 @@ class ExceptionHandler {
         return badRequest(e.message)
     }
 
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    @ResponseBody
+    protected fun exceptionHandler(e: DataIntegrityViolationException) = badRequest("该数据已被引用, 无法删除")
+
     @ExceptionHandler(CustomMessageException::class)
     @ResponseBody
     protected fun exceptionHandler(e: CustomMessageException) = e.toResponseEntity.also {
@@ -44,7 +52,10 @@ class ExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: MethodArgumentNotValidException) = badRequest("参数异常")
+    protected fun exceptionHandler(e: MethodArgumentNotValidException): ResponseEntity<String> {
+        log.warn("参数异常:\n" + e.bindingResult.allErrors.joinToString("\n") { it.defaultMessage!! })
+        return badRequest("参数异常")
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     @ResponseBody

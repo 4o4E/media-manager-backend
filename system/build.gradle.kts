@@ -27,9 +27,6 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-aop")
 
-    // gson
-    api("com.google.code.gson:gson:2.10.1")
-
     // knife4j
     api("com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0")
     // mybatis-plus
@@ -39,6 +36,7 @@ dependencies {
     api("io.projectreactor.kotlin:reactor-kotlin-extensions")
     api("org.jetbrains.kotlin:kotlin-reflect")
     runtimeOnly("com.mysql:mysql-connector-j")
+    // runtimeOnly("com.sun.mail:jakarta.mail:2.0.1")
 
     // serialization
     api(kotlinx("serialization-core-jvm", "1.6.2"))

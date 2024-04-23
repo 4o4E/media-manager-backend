@@ -1,6 +1,5 @@
 package top.e404.media.module.common.advice
 
-import com.google.gson.Gson
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -20,6 +19,7 @@ import top.e404.media.module.common.service.database.UserService
 import top.e404.media.module.common.service.database.UserTokenService
 import top.e404.media.module.common.util.log
 import top.e404.media.module.common.util.query
+import top.e404.media.module.common.util.toJsonString
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
  * 用于在请求中获取该用户的信息
  */
 @Aspect
-@Order(1) // 最先执行
+@Order(1)
 @Component
 class CurrentUserAdvice {
     private val log = log()
@@ -44,9 +44,6 @@ class CurrentUserAdvice {
     @set:Autowired
     lateinit var tokenService: UserTokenService
 
-    @set:Autowired
-    lateinit var gson: Gson
-
     /**
      * 注入当前用户数据
      *
@@ -57,11 +54,12 @@ class CurrentUserAdvice {
         val requestAttributes = RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?
         val request = requestAttributes!!.request
         val token = request.getHeader(HttpHeaders.AUTHORIZATION) ?: return joinPoint.proceed()
+        log.debug("token: {}", token)
 
         // 缓存
         currentUserCache[token]?.let { cache ->
             if (!cache.isExpire) {
-                log.debug("从缓存中读取token${token}对应用户: {}", gson)
+                log.debug("注入currentUser: {}", cache.toJsonString())
                 currentUsers.set(cache)
                 try {
                     return joinPoint.proceed()
@@ -74,14 +72,17 @@ class CurrentUserAdvice {
         val tokenDo = tokenService.getOne(query {
             eq(UserTokenDo::token, token)
         }) ?: return joinPoint.proceed()
-        val userDo = userService.getById(tokenDo.id!!)
-        val roles = roleService.getRoleByUserId(tokenDo.id!!).toSet()
+        val userDo = userService.getById(tokenDo.userId!!)
+        val roles = roleService.getRoleByUserId(tokenDo.userId!!).toSet()
         val perms = if (roles.isEmpty()) emptySet() else rolePermService.list(query {
             select(RolePermDo::role, RolePermDo::perm)
             `in`(RolePermDo::role, roles.map(RoleDo::id))
         }).asSequence().map { it.perm!! }.toSet()
         val current = CurrentUser(userDo, tokenDo, roles, perms)
+        // 缓存
         currentUserCache[token] = current
+        log.debug("缓存currentUser: {}", current.toJsonString())
+
         currentUsers.set(current)
         try {
             return joinPoint.proceed()
@@ -100,6 +101,9 @@ fun refreshCurrentUserCache() = currentUserCache.clear()
 
 internal val currentUsers = ThreadLocal<CurrentUser>()
 
+/**
+ * 当前请求对应的用户信息
+ */
 val currentUser: CurrentUser? get() = currentUsers.get()
 
 /**

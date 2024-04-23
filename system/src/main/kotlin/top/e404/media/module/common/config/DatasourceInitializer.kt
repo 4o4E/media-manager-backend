@@ -9,6 +9,9 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import java.io.File
 import javax.sql.DataSource
 
+/**
+ * 初始化数据库
+ */
 @Configuration
 class CustomizeDataSourceInitializer {
     @Value("classpath:DDL.sql")
@@ -17,6 +20,10 @@ class CustomizeDataSourceInitializer {
     @Bean
     fun dataSourceInitializer(dataSource: DataSource) = DataSourceInitializer().apply {
         setDataSource(dataSource)
-        if (!File(InitRunner.INIT_FILE_NAME).exists()) setDatabasePopulator(ResourceDatabasePopulator().apply { addScript(sqlScriptSchema) })
+        if (!File(InitRunner.INIT_FILE_NAME).exists()) setDatabasePopulator(ResourceDatabasePopulator().apply {
+            addScript(
+                sqlScriptSchema
+            )
+        })
     }
 }

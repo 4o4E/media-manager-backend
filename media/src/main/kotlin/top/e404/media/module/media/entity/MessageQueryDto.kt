@@ -7,8 +7,8 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.hibernate.validator.constraints.Range
-import top.e404.media.module.media.entity.info.MessageType
 import top.e404.media.module.common.util.primitive
+import top.e404.media.module.media.entity.info.MessageType
 
 @Schema(description = "消息查询")
 @Serializable
