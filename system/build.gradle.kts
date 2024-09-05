@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-fun kotlinx(id: String, version: String = "1.9.20") = "org.jetbrains.kotlinx:kotlinx-$id:$version"
+fun kotlinx(id: String, version: String = "2.0.20") = "org.jetbrains.kotlinx:kotlinx-$id:$version"
 
 dependencies {
     // implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -39,8 +39,8 @@ dependencies {
     // runtimeOnly("com.sun.mail:jakarta.mail:2.0.1")
 
     // serialization
-    api(kotlinx("serialization-core-jvm", "1.6.2"))
-    api(kotlinx("serialization-json-jvm", "1.6.2"))
+    api(kotlinx("serialization-core-jvm", "1.7.2"))
+    api(kotlinx("serialization-json-jvm", "1.7.2"))
     // bcrypt
     implementation("at.favre.lib:bcrypt:0.10.2")
 
