@@ -20,7 +20,7 @@ class FileController {
     lateinit var fileService: FileService
 
     @LogAccess
-    @GetMapping("/{id}")
+    @GetMapping("/{id}", produces = ["application/octet-stream"])
     @Operation(summary = "通过文件id获取文件")
     fun getById(@PathVariable @Parameter(description = "文件id") id: String) =
         fileService.getFileResourceBySha(id) ?: throw NotFoundException()
