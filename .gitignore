@@ -4,6 +4,8 @@ build
 run
 gradle/wrapper/*
 !gradle/wrapper/gradle-wrapper.properties
+.run
+!.run/Application.run.xml
 
 .DS_Store
 **/.DS_Store
