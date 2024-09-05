@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.page.PageInfo
+import top.e404.media.module.common.exception.NotFoundException
 import top.e404.media.module.media.entity.MessageDto
 import top.e404.media.module.media.entity.MessageQueryDto
 import top.e404.media.module.media.entity.comment.MessageCommentDto

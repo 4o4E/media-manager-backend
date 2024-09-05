@@ -23,7 +23,7 @@ class FileController {
     @GetMapping("/{id}")
     @Operation(summary = "通过文件id获取文件")
     fun getById(@PathVariable @Parameter(description = "文件id") id: String) =
-        fileService.getFileResourceBySha(id) ?: throw NotFoundException
+        fileService.getFileResourceBySha(id) ?: throw NotFoundException()
 
     @LogAccess
     @PostMapping("/{sha}/exists")
@@ -31,7 +31,7 @@ class FileController {
     @Operation(summary = "通过文件id检查文件是否存在")
     @ApiResponse(description = "若文件不存在则404")
     fun exists(@PathVariable sha: String) {
-        if (!fileService.exists(sha)) throw NotFoundException
+        if (!fileService.exists(sha)) throw NotFoundException()
     }
 
     @LogAccess
