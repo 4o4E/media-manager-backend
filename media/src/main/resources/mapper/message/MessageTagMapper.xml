@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.e404.media.module.media.mapper.MessageTagMapper">
+
+    <resultMap id="BaseResultMap" type="top.e404.media.module.media.entity.MessageTagDo">
+        <constructor>
+            <arg name="messageId" column="message_id" jdbcType="BIGINT"/>
+            <arg name="tagId" column="tag_id" jdbcType="BIGINT"/>
+
+            <arg name="version" column="version" jdbcType="BIGINT"/>
+            <arg name="createBy" column="create_by" jdbcType="BIGINT"/>
+            <arg name="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <arg name="updateBy" column="update_by" jdbcType="BIGINT"/>
+            <arg name="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        </constructor>
+    </resultMap>
+
+</mapper>

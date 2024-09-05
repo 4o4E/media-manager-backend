@@ -2,7 +2,6 @@ package top.e404.media.module.media.entity.info
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
-import top.e404.media.module.media.entity.meta.Meta
 
 /**
  * 消息信息
@@ -13,7 +12,6 @@ import top.e404.media.module.media.entity.meta.Meta
  * @property type 消息的类型
  * @property tags 消息的tag
  * @property approved 审核状态
- * @property metas 消息的元数据
  */
 @Schema(description = "消息信息")
 @Serializable
@@ -30,6 +28,4 @@ data class MessageInfo(
     val approved: ApprovedState,
     @Schema(description = "tag")
     val tags: MutableSet<String>,
-    @Schema(description = "元数据")
-    val metas: MutableList<out Meta>
 )

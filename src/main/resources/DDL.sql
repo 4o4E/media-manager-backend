@@ -119,3 +119,73 @@ CREATE TABLE IF NOT EXISTS sys_user_forget_password
     CHARSET UTF8MB4
     COLLATE utf8mb4_general_ci
     ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS media_tag
+(
+    id          BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+    name        VARCHAR(64)  NOT NULL COMMENT '标签名字',
+    description VARCHAR(256) NOT NULL COMMENT '标签简介',
+
+    version     BIGINT       NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT       NOT NULL COMMENT '创建者',
+    create_time BIGINT       NOT NULL COMMENT '创建于',
+    update_by   BIGINT       NOT NULL COMMENT '修改者',
+    update_time BIGINT       NOT NULL COMMENT '修改于'
+) COMMENT '标签'
+    CHARSET UTF8MB4
+    COLLATE utf8mb4_general_ci
+    ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS media_tag_alias
+(
+    id          BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+    tag_id      BIGINT      NOT NULL COMMENT '标签id',
+    name        VARCHAR(64) NOT NULL COMMENT '标签别名',
+
+    version     BIGINT      NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT      NOT NULL COMMENT '创建者',
+    create_time BIGINT      NOT NULL COMMENT '创建于',
+    update_by   BIGINT      NOT NULL COMMENT '修改者',
+    update_time BIGINT      NOT NULL COMMENT '修改于',
+    FOREIGN KEY (tag_id) REFERENCES media_tag (id)
+) COMMENT '标签别名'
+    CHARSET UTF8MB4
+    COLLATE utf8mb4_general_ci
+    ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS media_message
+(
+    id          BIGINT   NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+    content     JSON     NOT NULL COMMENT '消息内容',
+    type        TINYINT  NOT NULL COMMENT '消息类型',
+    hash        CHAR(64) NOT NULL COMMENT '消息hash',
+    approved    TINYINT  NOT NULL COMMENT '审核状态',
+
+    version     BIGINT   NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT   NOT NULL COMMENT '创建者',
+    create_time BIGINT   NOT NULL COMMENT '创建于',
+    update_by   BIGINT   NOT NULL COMMENT '修改者',
+    update_time BIGINT   NOT NULL COMMENT '修改于'
+) COMMENT '消息'
+    CHARSET UTF8MB4
+    COLLATE utf8mb4_general_ci
+    ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS media_message_tag
+(
+    message_id  BIGINT NOT NULL COMMENT '消息id',
+    tag_id      BIGINT NOT NULL COMMENT '标签id',
+
+    version     BIGINT NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT NOT NULL COMMENT '创建者',
+    create_time BIGINT NOT NULL COMMENT '创建于',
+    update_by   BIGINT NOT NULL COMMENT '修改者',
+    update_time BIGINT NOT NULL COMMENT '修改于',
+    PRIMARY KEY (message_id, tag_id),
+    FOREIGN KEY (message_id) REFERENCES media_message (id),
+    FOREIGN KEY (tag_id) REFERENCES media_tag (id)
+) COMMENT '消息标签, 一个消息有多个标签'
+    CHARSET UTF8MB4
+    COLLATE utf8mb4_general_ci
+    ENGINE InnoDB;
+
