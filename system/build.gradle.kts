@@ -30,7 +30,7 @@ dependencies {
     // knife4j
     api("com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0")
     // mybatis-plus
-    api("com.baomidou:mybatis-plus-boot-starter:3.5.4.1")
+    api("com.baomidou:mybatis-plus-spring-boot3-starter:3.5.7")
 
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("io.projectreactor.kotlin:reactor-kotlin-extensions")

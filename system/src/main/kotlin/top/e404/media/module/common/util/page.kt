@@ -21,7 +21,10 @@ fun <T : Any> PageInfo.toMybatisPage(
     val page = Page<T>(page, size)
     if (orderBy && sort.isNotBlank()) for (order in sort.split(";")) {
         val (field, mode) = order.split(",")
-        page.addOrder(OrderItem(StringUtils.camelToUnderline(field), mode.equals("asc", true)))
+        val orderItem = OrderItem()
+            .setColumn(StringUtils.camelToUnderline(field))
+            .setAsc(mode.equals("asc", true))
+        page.addOrder(orderItem)
     }
     page.setSearchCount(searchCount)
     return page
