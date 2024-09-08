@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.entity.auth.*
+import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.service.system.AuthService
 
 @Validated
@@ -25,12 +26,12 @@ class AuthController {
     @LogAccess
     @PostMapping("/login")
     @Operation(summary = "登录")
-    fun login(@RequestBody dto: LoginDto) = authService.login(dto)
+    fun login(@RequestBody dto: LoginDto) = authService.login(dto).toResp()
 
     @LogAccess
     @PostMapping("/register")
     @Operation(summary = "注册")
-    fun register(@RequestBody dto: RegisterDto) = authService.register(dto)
+    fun register(@RequestBody dto: RegisterDto) = authService.register(dto).toResp()
 
     @LogAccess
     @PostMapping("/forgetPassword")

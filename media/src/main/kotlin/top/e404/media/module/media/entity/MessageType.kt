@@ -1,4 +1,4 @@
-package top.e404.media.module.media.entity.info
+package top.e404.media.module.media.entity
 
 import kotlinx.serialization.Serializable
 import top.e404.media.module.media.entity.data.*

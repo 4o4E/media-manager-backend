@@ -1,4 +1,4 @@
-package top.e404.media.module.media.entity.info
+package top.e404.media.module.media.entity
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.KSerializer

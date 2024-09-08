@@ -8,7 +8,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.hibernate.validator.constraints.Range
 import top.e404.media.module.common.util.primitive
-import top.e404.media.module.media.entity.info.MessageType
 
 @Schema(description = "消息查询")
 @Serializable
@@ -19,7 +18,7 @@ data class MessageQueryDto(
     val tags: MutableSet<String>,
     @Schema(description = "数量, 受账号等级限制")
     @Range(min = 1, max = 100)
-    val count: Int = 1,
+    val count: Long = 1,
     @Schema(description = "指定消息类型")
     val type: MessageType? = null
 )

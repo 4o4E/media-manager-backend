@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.page.PageInfo
-import top.e404.media.module.common.exception.NotFoundException
+import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.media.entity.MessageDto
 import top.e404.media.module.media.entity.MessageQueryDto
 import top.e404.media.module.media.entity.comment.MessageCommentDto
@@ -30,19 +30,19 @@ class MessageController {
     @PostMapping("")
     @RequirePerm("message:query")
     @Operation(summary = "通过高级查询获取message")
-    fun query(@RequestBody dto: MessageQueryDto) = messageService.query(dto)
+    fun queryMessage(@RequestBody dto: MessageQueryDto) = messageService.query(dto).toResp()
 
     @LogAccess
     @GetMapping("/random")
     @RequirePerm("message:query")
     @Operation(summary = "随机获取message")
-    fun page(count: Long) = messageService.random(count)
+    fun listMessage(count: Long) = messageService.random(count).toResp()
 
     @LogAccess
     @PutMapping("")
     @RequirePerm("message:upload")
     @Operation(summary = "上传message", description = "上传message前需要先上传二进制文件")
-    fun save(@RequestBody dto: MessageDto) = messageService.save(dto)
+    fun saveMessage(@RequestBody dto: MessageDto) = messageService.save(dto).toResp()
 
     // 评论
 
@@ -52,14 +52,14 @@ class MessageController {
     fun listComment(
         @PathVariable id: String,
         page: PageInfo
-    ) = messageService.getComment(id, page)
+    ) = messageService.listComment(id, page).toResp()
 
     @LogAccess
     @PutMapping("/{id}/comment")
     @RequirePerm("messageComment:upload")
     @Operation(summary = "发送评论")
-    fun addComment(
+    fun postComment(
         @PathVariable id: String,
         @RequestBody dto: MessageCommentDto
-    ) = messageService.addComment(id, dto)
+    ) = messageService.postComment(id, dto).toResp()
 }

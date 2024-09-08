@@ -26,14 +26,14 @@ class PermCheckAdvice {
     @Before("@annotation(ann)")
     private fun checkPerm(joinPoint: JoinPoint, ann: RequirePerm) {
         if (ann.perms.isEmpty()) return
-        val current = currentUser ?: throw UnauthorizedException
-        if (current.isExpire) throw AuthorizationExpireException
+        val current = currentUser ?: throw UnauthorizedException()
+        if (current.isExpire) throw AuthorizationExpireException()
 
         // 缺失权限
         val lack = ann.perms.filter { it !in current.perms }
         if (lack.isNotEmpty()) {
             log.warn("缺失权限: {}", lack)
-            throw PermissionDeniedException
+            throw PermissionDeniedException()
         }
     }
 }

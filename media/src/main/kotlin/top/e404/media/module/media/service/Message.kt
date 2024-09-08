@@ -8,6 +8,7 @@ import com.mongodb.client.result.UpdateResult
 import org.bson.BsonDocument
 import org.bson.BsonString
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import top.e404.media.module.common.advice.currentUser
@@ -18,12 +19,12 @@ import top.e404.media.module.media.entity.MessageQueryDto
 import top.e404.media.module.media.entity.QueryMode
 import top.e404.media.module.media.entity.comment.MessageComment
 import top.e404.media.module.media.entity.comment.MessageCommentDto
-import top.e404.media.module.media.entity.comment.MessageCommentList
 import top.e404.media.module.media.entity.data.BinaryMessage
-import top.e404.media.module.media.entity.info.ApprovedState
-import top.e404.media.module.media.entity.info.MessageInfo
-import top.e404.media.module.media.entity.info.MessageType
+import top.e404.media.module.media.entity.ApprovedState
+import top.e404.media.module.media.entity.MessageType
 import top.e404.media.module.media.util.*
+import java.time.LocalDateTime
+import java.util.*
 
 
 interface MessageService {
@@ -43,6 +44,11 @@ interface MessageService {
     fun save(dto: MessageDto): MessageData
 
     /**
+     * 导入message
+     */
+    fun import(dto: MessageDto, time: LocalDateTime): MessageData
+
+    /**
      * 添加tag
      */
     fun addTags(id: String, tags: Set<String>): UpdateResult
@@ -60,12 +66,12 @@ interface MessageService {
     /**
      * 发送评论
      */
-    fun addComment(id: String, dto: MessageCommentDto): MessageComment
+    fun postComment(id: String, dto: MessageCommentDto): MessageComment
 
     /**
      * 获取评论
      */
-    fun getComment(id: String, page: PageInfo): List<MessageComment>
+    fun listComment(id: String, page: PageInfo): List<MessageComment>
 
     /**
      * 分页获取
@@ -75,6 +81,7 @@ interface MessageService {
 
 @Service
 class MessageServiceImpl : MessageService {
+    @set:Qualifier("media")
     @set:Autowired
     lateinit var media: MongoCollection<BsonDocument>
 
@@ -85,19 +92,22 @@ class MessageServiceImpl : MessageService {
     lateinit var kBson: KBson
 
     override fun getById(id: String): MessageData? = media
-        .find(bson("info.id", id))
+        .find(bson("id", id))
         .firstOrNull()
         ?.toMessageData()
 
     override fun query(dto: MessageQueryDto): List<MessageData> {
         val query = when (dto.queryMode) {
-            QueryMode.ANY -> bson("info.tags", bsonIn(bsonArray(dto.tags)))
-            QueryMode.ALL -> bson("info.tags", bsonAll(bsonArray(dto.tags)))
+            QueryMode.ANY -> bson("tags", bsonIn(bsonArray(dto.tags)))
+            QueryMode.ALL -> bson("tags", bsonAll(bsonArray(dto.tags)))
         }
         return media
-            .find(query)
-            // .projection(bson("comment", 0))
-            .limit(dto.count)
+            .aggregate(
+                mutableListOf(
+                    bsonSample(dto.count),
+                    bsonMatch(query)
+                )
+            )
             .map(BsonDocument::toMessageData)
             .toList()
     }
@@ -109,21 +119,42 @@ class MessageServiceImpl : MessageService {
         }
         val id = chain.sha()
         val upload = currentUser!!.user.id!!
-        val exists = media.find(BsonDocument("info.id", BsonString(id))).firstOrNull()
+        val exists = media.find(BsonDocument("id", BsonString(id))).firstOrNull()
         if (exists != null) return kBson.load(MessageData.serializer(), exists)
 
         val data = MessageData(
-            MessageInfo(
-                id = id,
-                upload = upload,
-                time = System.currentTimeMillis(),
-                type = MessageType.byMessage(chain),
-                approved = ApprovedState.WAIT,
-                tags = tags,
-                metas = mutableListOf()
-            ),
+            id,
+            upload,
+            System.currentTimeMillis(),
+            MessageType.byMessage(chain),
+            ApprovedState.WAIT,
+            tags,
+            chain
+        )
+
+        val result = media.insertOne(kBson.stringify(MessageData.serializer(), data))
+        if (!result.wasAcknowledged()) throw IllegalArgumentException("already exists")
+        return data
+    }
+
+    override fun import(dto: MessageDto, time: LocalDateTime): MessageData {
+        val (chain, tags) = dto
+        require(fileService.allExists(chain.filterIsInstance<BinaryMessage>().map(BinaryMessage::id))) {
+            "消息中的二进制文件不存在"
+        }
+        val id = chain.sha()
+        val upload = currentUser!!.user.id!!
+        val exists = media.find(BsonDocument("id", BsonString(id))).firstOrNull()
+        if (exists != null) return kBson.load(MessageData.serializer(), exists)
+
+        val data = MessageData(
+            id,
+            upload,
+            time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000,
+            MessageType.byMessage(chain),
+            ApprovedState.PASS,
+            tags,
             chain,
-            MessageCommentList()
         )
 
         val result = media.insertOne(kBson.stringify(MessageData.serializer(), data))
@@ -132,19 +163,19 @@ class MessageServiceImpl : MessageService {
     }
 
     override fun addTags(id: String, tags: Set<String>) = media.updateOne(
-        bson("info.id", id),
-        bsonAddToSet("info.tags", bsonEach(bsonArray(checkTag(tags))))
+        bson("id", id),
+        bsonAddToSet("tags", bsonEach(bsonArray(checkTag(tags))))
     )
 
     override fun setTags(id: String, tags: Set<String>) = media.updateOne(
-        bson("info.id", id),
-        bsonSet("info.tags", bsonArray(checkTag(tags)))
+        bson("id", id),
+        bsonSet("tags", bsonArray(checkTag(tags)))
     )
 
     override fun delTags(id: String, tags: Set<String>) = media.updateOne(
-        bson("info.id", id),
+        bson("id", id),
 
-        bsonPull("info.tags", bsonEach(bsonArray((tags))))
+        bsonPull("tags", bsonEach(bsonArray((tags))))
     )
 
     @Value("\${application.media.tag.rule}")
@@ -162,9 +193,9 @@ class MessageServiceImpl : MessageService {
         return tags
     }
 
-    override fun addComment(id: String, dto: MessageCommentDto): MessageComment {
+    override fun postComment(id: String, dto: MessageCommentDto): MessageComment {
         val index = media.findOneAndUpdate(
-            bson("info.id", id),
+            bson("id", id),
             bsonInc("comment.current", bson(1)),
             FindOneAndUpdateOptions()
                 .returnDocument(ReturnDocument.AFTER)
@@ -173,15 +204,15 @@ class MessageServiceImpl : MessageService {
         requireNotNull(index) { "无法找到对应消息" }
         val comment = MessageComment(index, dto.sender, dto.type, dto.content, System.currentTimeMillis())
         media.updateOne(
-            bson("info.id", id),
+            bson("id", id),
             bsonPush(kBson.stringify(MessageComment.serializer(), comment))
         )
         return comment
     }
 
-    override fun getComment(id: String, page: PageInfo) = media.aggregate(
+    override fun listComment(id: String, page: PageInfo) = media.aggregate(
         mutableListOf(
-            bsonMatch(bson("info.id", id)),
+            bsonMatch(bson("id", id)),
             bson().deepPut(
                 "\$project", "list", "\$slice",
                 value = bsonArray(

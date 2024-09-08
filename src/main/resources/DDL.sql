@@ -119,3 +119,36 @@ CREATE TABLE IF NOT EXISTS sys_user_forget_password
     CHARSET UTF8MB4
     COLLATE utf8mb4_general_ci
     ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS media_tag
+(
+    id          BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+    name        VARCHAR(64)  NOT NULL COMMENT '标签名字',
+    description VARCHAR(256) NOT NULL COMMENT '标签简介',
+
+    version     BIGINT       NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT       NOT NULL COMMENT '创建者',
+    create_time BIGINT       NOT NULL COMMENT '创建于',
+    update_by   BIGINT       NOT NULL COMMENT '修改者',
+    update_time BIGINT       NOT NULL COMMENT '修改于'
+) COMMENT '标签'
+    CHARSET UTF8MB4
+    COLLATE utf8mb4_general_ci
+    ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS media_tag_alias
+(
+    id          BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+    tag_id      BIGINT      NOT NULL COMMENT '标签id',
+    name        VARCHAR(64) NOT NULL COMMENT '标签别名',
+
+    version     BIGINT      NOT NULL COMMENT '乐观锁',
+    create_by   BIGINT      NOT NULL COMMENT '创建者',
+    create_time BIGINT      NOT NULL COMMENT '创建于',
+    update_by   BIGINT      NOT NULL COMMENT '修改者',
+    update_time BIGINT      NOT NULL COMMENT '修改于',
+    FOREIGN KEY (tag_id) REFERENCES media_tag (id)
+) COMMENT '标签别名'
+    CHARSET UTF8MB4
+    COLLATE utf8mb4_general_ci
+    ENGINE InnoDB;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import top.e404.media.module.common.advice.currentUser
 import top.e404.media.module.common.entity.auth.*
-import top.e404.media.module.common.exception.CustomMessageException
+import top.e404.media.module.common.exception.HttpRequestException
 import top.e404.media.module.common.exception.SimplePasswordException
 import top.e404.media.module.common.exception.WrongPasswordException
 import top.e404.media.module.common.service.database.ForgetPasswordService
@@ -85,7 +85,7 @@ class AuthServiceImpl : AuthService {
             eq(UserDo::deleted, false)
         }) ?: run {
             log.warn("没有对应的用户: {}", dto.username)
-            throw WrongPasswordException
+            throw WrongPasswordException()
         }
         val userId = user.id!!
         // 检查密码
@@ -93,7 +93,7 @@ class AuthServiceImpl : AuthService {
         // 密码错误
         if (!result.verified) {
             log.warn("密码错误: {}", dto)
-            throw WrongPasswordException
+            throw WrongPasswordException()
         }
         val token = userTokenService.generateToken(user)
         val perms = userService.getPermById(userId)
@@ -106,7 +106,7 @@ class AuthServiceImpl : AuthService {
     @Transactional(rollbackFor = [Exception::class])
     override fun register(dto: RegisterDto): LoginVo {
         val (type, value, username, password) = dto
-        if (!passwordRegex.matches(password)) throw SimplePasswordException
+        if (!passwordRegex.matches(password)) throw SimplePasswordException()
         val userDo = UserDo(
             name = username,
             password = BCrypt.withDefaults().hashToString(12, password.toCharArray()),
@@ -156,8 +156,8 @@ class AuthServiceImpl : AuthService {
         // 校验token
         val forgetPasswordDo = forgetPasswordService.getOne(query {
             eq(ForgetPasswordDo::token, token)
-        }) ?: throw CustomMessageException("invalid token")
-        if (!forgetPasswordDo.valid!!) throw CustomMessageException("invalid token")
+        }) ?: throw HttpRequestException("invalid token")
+        if (!forgetPasswordDo.valid!!) throw HttpRequestException("invalid token")
         // 已过有效期
         if (forgetPasswordDo.createTime!! + forgetDuration.toMillis() < System.currentTimeMillis()) {
             // 异步修改token过期
@@ -168,10 +168,10 @@ class AuthServiceImpl : AuthService {
                         .set(ForgetPasswordDo::valid, false)
                 )
             }
-            throw CustomMessageException("token expired")
+            throw HttpRequestException("token expired")
         }
         // 校验密码
-        if (!passwordRegex.matches(password)) throw SimplePasswordException
+        if (!passwordRegex.matches(password)) throw SimplePasswordException()
         // 更新密码
         userService.update(
             LambdaUpdateWrapper<UserDo>()
@@ -187,9 +187,9 @@ class AuthServiceImpl : AuthService {
         // 检查密码
         val result = BCrypt.verifyer().verify(old.toCharArray(), currentUser!!.user.password)
         // 密码错误
-        if (!result.verified) throw WrongPasswordException
+        if (!result.verified) throw WrongPasswordException()
         // 校验密码
-        if (!passwordRegex.matches(new)) throw SimplePasswordException
+        if (!passwordRegex.matches(new)) throw SimplePasswordException()
         // 更新密码
         userService.update(
             LambdaUpdateWrapper<UserDo>()

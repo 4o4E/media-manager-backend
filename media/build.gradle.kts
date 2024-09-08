@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.springframework.boot")
@@ -18,25 +18,22 @@ dependencies {
     implementation("com.github.jershell:kbson:0.5.0")
 
     // mongodb
-    implementation("org.mongodb:mongodb-driver-sync:4.11.1")
+    implementation("org.mongodb:mongodb-driver-sync:5.1.2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(rootProject)
 }
 
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs += "-Xjsr305=strict"
-            jvmTarget = "17"
-        }
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-Xjsr305=strict"
+        )
+        jvmTarget.set(JvmTarget.JVM_17)
     }
+}
 
-    withType<Test> {
-        useJUnitPlatform()
-    }
-
-    test {
-        workingDir = rootDir.resolve("run").also(File::mkdir)
-    }
+tasks.test {
+    useJUnitPlatform()
+    workingDir = rootDir.resolve(".run").also(File::mkdir)
 }

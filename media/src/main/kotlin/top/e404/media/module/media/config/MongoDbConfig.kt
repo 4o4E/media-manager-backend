@@ -41,6 +41,12 @@ class MongoDbConfig {
     /**
      * mongodb 集合
      */
-    @get:Bean
+    @get:Bean("media")
     val media by lazy { db.getCollection(mediaCollection, BsonDocument::class.java) }
+
+    /**
+     * mongodb 集合
+     */
+    @get:Bean("lock")
+    val lock by lazy { db.getCollection("lock", BsonDocument::class.java) }
 }

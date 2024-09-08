@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page
 import top.e404.media.module.common.entity.page.PageInfo
 import top.e404.media.module.common.entity.page.PageResult
+import top.e404.media.module.common.entity.toResp
 
 /**
  * 通过pageable生成Mybatis的Page
@@ -33,10 +34,11 @@ fun <T : Any> PageInfo.toMybatisPage(
 /**
  * 将分页查询的结果转换为PageResult
  */
+@Suppress("UNUSED")
 fun <T : Any> IPage<T>.toPageResult() = PageResult<T, Void>(records ?: emptyList(), total)
 
 /**
  * 将分页查询的结果进行转换并转换为PageResult
  */
 inline fun <T : Any, R : Any> IPage<T>.toPageResult(map: (T) -> R) =
-    PageResult<R, Void>(records?.map(map) ?: emptyList(), total)
+    PageResult<R, Void>(records?.map(map) ?: emptyList(), total).toResp()

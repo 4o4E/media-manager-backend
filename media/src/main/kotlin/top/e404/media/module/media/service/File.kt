@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.FileSystemResource
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.security.MessageDigest
 
@@ -17,7 +16,7 @@ interface FileService {
     /**
      * 上传文件
      */
-    fun upload(file: MultipartFile): String
+    fun upload(bytes: ByteArray): String
 
     /**
      * 检查文件是否存在
@@ -42,8 +41,7 @@ class FileServiceImpl : FileService {
         else null
     }
 
-    override fun upload(file: MultipartFile): String {
-        val bytes = file.bytes
+    override fun upload(bytes: ByteArray): String {
 
         @OptIn(ExperimentalStdlibApi::class)
         val sha = MessageDigest.getInstance("sha-256").digest(bytes).toHexString()

@@ -8,7 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import top.e404.media.module.common.exception.CustomMessageException
+import top.e404.media.module.common.exception.HttpRequestException
 
 /**
  * 全局异常处理器 用于处理所有未处理的异常
@@ -33,7 +33,7 @@ class ExceptionHandler {
     @ExceptionHandler(Exception::class)
     @ResponseBody
     protected fun exceptionHandler(e: Throwable): ResponseEntity<*> {
-        if (e.cause is CustomMessageException) return exceptionHandler(e.cause as CustomMessageException)
+        if (e.cause is HttpRequestException) return exceptionHandler(e.cause as HttpRequestException)
 
         log.error("未处理的异常", e)
         return badRequest(e.message)
@@ -43,9 +43,9 @@ class ExceptionHandler {
     @ResponseBody
     protected fun exceptionHandler(e: DataIntegrityViolationException) = badRequest("该数据已被引用, 无法删除")
 
-    @ExceptionHandler(CustomMessageException::class)
+    @ExceptionHandler(HttpRequestException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: CustomMessageException) = e.toResponseEntity.also {
+    protected fun exceptionHandler(e: HttpRequestException) = e.toResponseEntity().also {
         log.debug("responseBody: {}", it.body)
         log.warn(e.message, e)
     }

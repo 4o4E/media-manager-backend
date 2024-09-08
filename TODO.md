@@ -1,4 +1,5 @@
 - [ ] api请求速率限制
 - [ ] 用户等级
 - [x] 评论
-- [ ] log4jdbc
+- [x] log4jdbc
+- [ ] tag id

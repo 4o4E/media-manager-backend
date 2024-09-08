@@ -9,9 +9,11 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
+import top.e404.media.module.common.entity.BaseResp
 import top.e404.media.module.common.entity.UpdateValid
 import top.e404.media.module.common.entity.auth.*
 import top.e404.media.module.common.entity.page.PageInfo
+import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.entity.user.AddUserDto
 import top.e404.media.module.common.entity.user.UpdatePasswordDto
 import top.e404.media.module.common.service.database.UserRoleService
@@ -33,7 +35,7 @@ class UserController {
     @GetMapping("")
     @RequirePerm("user:get")
     @Operation(summary = "分页获取用户")
-    fun list(pageInfo: PageInfo) = userService.page(pageInfo.toMybatisPage()).toPageResult {
+    fun listUser(pageInfo: PageInfo) = userService.page(pageInfo.toMybatisPage()).toPageResult {
         it.copyAs(UserVo::class)
     }
 
@@ -41,19 +43,19 @@ class UserController {
     @GetMapping("/{id}")
     @RequirePerm("user:get")
     @Operation(summary = "通过id获取用户信息")
-    fun getUserById(@PathVariable id: Long) = userService.getById(id).copyAs(UserVo::class)
+    fun getUserById(@PathVariable id: Long) = userService.getById(id).copyAs(UserVo::class).toResp()
 
     @LogAccess
     @GetMapping("/{id}/roles")
     @RequirePerm("user:get")
     @Operation(summary = "通过id获取用户角色信息")
-    fun getRoleById(@PathVariable id: Long) = userService.getRoleById(id).map { it.copyAs(RoleVo::class) }
+    fun getRoleById(@PathVariable id: Long) = userService.getRoleById(id).map { it.copyAs(RoleVo::class) }.toResp()
 
     @LogAccess
     @PostMapping("/{userId}/roles/{roleId}")
     @RequirePerm("user:edit")
     @Operation(summary = "添加用户角色关联")
-    fun putRoleForUser(
+    fun addRoleForUser(
         @PathVariable userId: Long,
         @PathVariable roleId: Long
     ) {
@@ -79,16 +81,16 @@ class UserController {
     @GetMapping("/{id}/perms")
     @RequirePerm("user:get")
     @Operation(summary = "通过id获取用户权限信息")
-    fun getPermById(@PathVariable id: Long) = userService.getPermById(id).map { it.copyAs(RolePermVo::class) }
+    fun getPermById(@PathVariable id: Long) = userService.getPermById(id).map { it.copyAs(RolePermVo::class) }.toResp()
 
     @LogAccess
     @PostMapping("")
     @RequirePerm("user:save")
     @Operation(summary = "创建用户")
-    fun save(@RequestBody @Validated dto: AddUserDto): UserVo {
+    fun save(@RequestBody @Validated dto: AddUserDto): BaseResp<UserVo> {
         val userDo = dto.copyAs(UserDo::class)
         userService.save(userDo)
-        return userDo.copyAs(UserVo::class)
+        return userDo.copyAs(UserVo::class).toResp()
     }
 
     @LogAccess
@@ -101,17 +103,17 @@ class UserController {
         userRoleService.remove(query {
             eq(UserRoleDo::userId, id)
         })
-        userService.removeById(id)
+        userService.removeById(id).toResp()
     }
 
     @LogAccess
     @PatchMapping("")
     @RequirePerm("user:update")
     @Operation(summary = "更新用户数据")
-    fun update(@RequestBody @Validated(UpdateValid::class) dto: UserDto): UserVo {
+    fun update(@RequestBody @Validated(UpdateValid::class) dto: UserDto): BaseResp<UserVo> {
         val userDo = dto.copyAs(UserDo::class)
         userService.updateById(userDo)
-        return userDo.copyAs(UserVo::class)
+        return userDo.copyAs(UserVo::class).toResp()
     }
 
     @LogAccess

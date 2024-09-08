@@ -28,7 +28,7 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/debug-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -36,7 +36,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger level="info" name="jdbc.sqlonly"/>
+    <logger level="debug" name="jdbc.sqlonly"/>
     <logger level="off" name="jdbc.audit"/>
     <logger level="off" name="jdbc.sqltiming"/>
     <logger level="off" name="jdbc.resultset"/>
@@ -57,7 +57,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

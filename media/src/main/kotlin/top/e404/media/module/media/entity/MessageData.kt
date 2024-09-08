@@ -2,20 +2,29 @@ package top.e404.media.module.media.entity
 
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotEmpty
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import top.e404.media.module.media.entity.comment.MessageCommentList
 import top.e404.media.module.media.entity.data.Message
-import top.e404.media.module.media.entity.info.MessageInfo
 
 @Serializable
 @Schema(description = "完整的一条消息")
 data class MessageData(
-    @Schema(description = "消息信息")
-    val info: MessageInfo,
+    @Schema(description = "消息唯一id")
+    @SerialName("_id")
+    val id: String,
+    @Schema(description = "上传者")
+    val upload: Long,
+    @Schema(description = "上传时间")
+    val time: Long,
+    @Schema(description = "消息类型")
+    val type: MessageType,
+    @Schema(description = "审核状态")
+    val approved: ApprovedState,
+    @NotEmpty
+    @Schema(description = "tag")
+    val tags: MutableSet<String>,
     @NotEmpty
     @Schema(description = "消息内容")
-    val data: List<Message>,
-    @Schema(description = "消息评论")
-    val comment: MessageCommentList
+    val content: List<Message>,
 )
 
