@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS sys_user_forget_password
 CREATE TABLE IF NOT EXISTS media_tag
 (
     id          BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
-    name        VARCHAR(64)  NOT NULL COMMENT '标签名字',
+    name        VARCHAR(64)  NOT NULL UNIQUE COMMENT '创建标签时指定的名字, 不用于显示, 以alias为准',
     description VARCHAR(256) NOT NULL COMMENT '标签简介',
 
     version     BIGINT       NOT NULL COMMENT '乐观锁',
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS media_tag_alias
 (
     id          BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
     tag_id      BIGINT      NOT NULL COMMENT '标签id',
-    name        VARCHAR(64) NOT NULL COMMENT '标签别名',
+    name        VARCHAR(64) NOT NULL UNIQUE COMMENT '标签别名',
 
     version     BIGINT      NOT NULL COMMENT '乐观锁',
     create_by   BIGINT      NOT NULL COMMENT '创建者',
