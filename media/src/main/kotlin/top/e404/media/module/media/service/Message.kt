@@ -104,8 +104,8 @@ class MessageServiceImpl : MessageService {
         return media
             .aggregate(
                 mutableListOf(
+                    bsonMatch(query),
                     bsonSample(dto.count),
-                    bsonMatch(query)
                 )
             )
             .map(BsonDocument::toMessageData)
