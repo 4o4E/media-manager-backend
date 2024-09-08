@@ -1,27 +1,22 @@
 package top.e404.media.module.media.service
 
-import com.baomidou.mybatisplus.core.metadata.IPage
 import com.baomidou.mybatisplus.extension.service.IService
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import top.e404.media.module.common.entity.BaseResp
-import top.e404.media.module.common.entity.page.PageInfo
-import top.e404.media.module.common.entity.page.PageResult
+import top.e404.media.module.common.exception.HttpRequestException
 import top.e404.media.module.common.exception.NotFoundException
 import top.e404.media.module.common.util.query
 import top.e404.media.module.common.util.update
-import top.e404.media.module.common.util.toMybatisPage
-import top.e404.media.module.common.util.toPageResult
 import top.e404.media.module.media.entity.TagAliasDo
 import top.e404.media.module.media.entity.TagDo
 import top.e404.media.module.media.entity.TagDto
 import top.e404.media.module.media.mapper.TagMapper
 
 interface TagService : IService<TagDo> {
-    fun listTags(pageInfo: PageInfo, key: String?): BaseResp<PageResult<TagDto, Void>>
-    fun createTag(name: String, description: String)
+    fun listTags(key: String?): List<TagDto>
+    fun createTag(name: String, description: String): TagDo
     fun editTag(id: Long, name: String, description: String)
 }
 
@@ -30,13 +25,13 @@ class TagServiceImpl : TagService, ServiceImpl<TagMapper, TagDo>() {
     @set:Autowired
     lateinit var tagAliasService: TagAliasService
 
-    override fun listTags(pageInfo: PageInfo, key: String?): BaseResp<PageResult<TagDto, Void>> {
-        val page = pageInfo.toMybatisPage<TagDo>()
-        baseMapper.listTags(page, key)
+    override fun listTags(key: String?): List<TagDto> {
+        val list = baseMapper.listTags(key)
         val aliases = tagAliasService.list(query {
-            `in`(TagAliasDo::tagId, page.records.map { it.id })
+            val tagIds = list.map { it.id }
+            `in`(tagIds.isNotEmpty(), TagAliasDo::tagId, tagIds)
         }).groupBy { it.tagId }
-        return page.toPageResult { tag ->
+        return list.map { tag ->
             TagDto(
                 tag.id!!,
                 tag.name!!,
@@ -47,13 +42,15 @@ class TagServiceImpl : TagService, ServiceImpl<TagMapper, TagDo>() {
     }
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun createTag(name: String, description: String) {
-        tagAliasService.count(query {
-
-        })
+    override fun createTag(name: String, description: String): TagDo {
+        val hasExists = tagAliasService.count(query {
+            eq(TagAliasDo::name, name)
+        }) > 0
+        if (hasExists) throw HttpRequestException("标签已存在")
         val tagDo = TagDo(name = name, description = description)
         save(tagDo)
         tagAliasService.save(TagAliasDo(tagId = tagDo.id, name = name))
+        return tagDo
     }
 
     override fun editTag(id: Long, name: String, description: String) {

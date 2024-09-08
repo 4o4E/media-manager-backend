@@ -10,5 +10,5 @@ data class MessageDto(
     @Schema(description = "消息的具体数据")
     val chain: MutableList<Message>,
     @Schema(description = "该消息的tag")
-    val tags: MutableSet<String>
+    val tags: MutableSet<Long>
 )

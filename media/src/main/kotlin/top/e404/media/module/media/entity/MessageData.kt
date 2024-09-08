@@ -22,7 +22,7 @@ data class MessageData(
     val approved: ApprovedState,
     @NotEmpty
     @Schema(description = "tag")
-    val tags: MutableSet<String>,
+    val tags: MutableSet<Long>,
     @NotEmpty
     @Schema(description = "消息内容")
     val content: List<Message>,
