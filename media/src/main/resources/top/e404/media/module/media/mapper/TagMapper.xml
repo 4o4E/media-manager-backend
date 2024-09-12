@@ -28,4 +28,15 @@
         </if>
     </select>
 
+    <select id="getLastUpdateTime">
+        SELECT time.update_time
+        from (SELECT update_time
+              FROM media_tag
+              UNION
+              SELECT update_time
+              FROM media_tag_alias) as time
+        ORDER BY time.update_time DESC
+        LIMIT 1
+    </select>
+
 </mapper>

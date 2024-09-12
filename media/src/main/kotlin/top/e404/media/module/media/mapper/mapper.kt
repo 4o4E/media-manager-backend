@@ -8,6 +8,7 @@ import top.e404.media.module.media.entity.TagDo
 @Mapper
 interface TagMapper : BaseMapper<TagDo> {
     fun listTags(key: String?): List<TagDo>
+    fun getLastUpdateTime(): Long
 }
 
 @Mapper

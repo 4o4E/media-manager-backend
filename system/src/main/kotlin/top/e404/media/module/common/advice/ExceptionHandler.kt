@@ -2,6 +2,8 @@ package top.e404.media.module.common.advice
 
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import top.e404.media.module.common.exception.HttpRequestException
+import top.e404.media.module.common.exception.NoChangeException
 
 /**
  * 全局异常处理器 用于处理所有未处理的异常
@@ -42,6 +45,10 @@ class ExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException::class)
     @ResponseBody
     protected fun exceptionHandler(e: DataIntegrityViolationException) = badRequest("该数据已被引用, 无法删除")
+
+    @ExceptionHandler(NoChangeException::class)
+    @ResponseBody
+    protected fun exceptionHandler(e: NoChangeException) = ResponseEntity<Void>(HttpStatus.NOT_MODIFIED)
 
     @ExceptionHandler(HttpRequestException::class)
     @ResponseBody

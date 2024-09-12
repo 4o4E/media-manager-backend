@@ -2,13 +2,16 @@ package top.e404.media.module.common.exception
 
 import org.springframework.http.ResponseEntity
 import top.e404.media.module.common.entity.fail
+import java.lang.Exception
+
+class NoChangeException : Exception()
 
 /**
  * 基础异常
  */
 open class HttpRequestException(
     override val message: String
-) : Throwable(message) {
+) : Exception(message) {
     open fun toResponseEntity() = ResponseEntity.ok(fail(message))
 }
 

@@ -12,7 +12,7 @@ class TagController {
     lateinit var tagService: TagService
 
     @GetMapping
-    fun listTags(key: String?) = tagService.listTags(key).toResp()
+    fun listTags(key: String?, lastUpdated: Long?) = tagService.listTags(key, lastUpdated).toResp()
 
     @PostMapping
     fun createTag(name: String, description: String) = tagService.createTag(name, description).toResp()
