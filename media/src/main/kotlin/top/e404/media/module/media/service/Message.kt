@@ -89,6 +89,9 @@ class MessageServiceImpl : MessageService {
     lateinit var fileService: FileService
 
     @set:Autowired
+    lateinit var tagService: TagService
+
+    @set:Autowired
     lateinit var kBson: KBson
 
     override fun getById(id: String): MessageData? = media
@@ -116,6 +119,12 @@ class MessageServiceImpl : MessageService {
         val (chain, tags) = dto
         require(fileService.allExists(chain.filterIsInstance<BinaryMessage>().map(BinaryMessage::id))) {
             "消息中的二进制文件不存在"
+        }
+        require(tags.isNotEmpty()) {
+            "消息需要有至少一个tag"
+        }
+        require(tagService.allExist(tags)) {
+            "消息中的tag不存在"
         }
         val id = chain.sha()
         val upload = currentUser!!.user.id!!
