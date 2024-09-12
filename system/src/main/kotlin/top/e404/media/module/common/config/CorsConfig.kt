@@ -28,7 +28,7 @@ class CorsConfig : WebMvcConfigurer {
     @get:Bean
     val corsFilter = CorsFilter(UrlBasedCorsConfigurationSource().apply {
         registerCorsConfiguration("/**", CorsConfiguration().apply {
-            addAllowedOrigin("http://localhost:5173")
+            addAllowedOriginPattern("*")
             addAllowedHeader("*")
             addAllowedMethod(HttpMethod.GET)
             addAllowedMethod(HttpMethod.POST)
