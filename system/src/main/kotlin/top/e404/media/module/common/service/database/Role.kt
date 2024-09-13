@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.auth.RoleDo
 import top.e404.media.module.common.entity.auth.RolePermDo
+import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.common.mapper.RoleMapper
 import top.e404.media.module.common.util.query
 
@@ -32,7 +33,7 @@ interface RoleService : IService<RoleDo> {
     /**
      * 获取所有权限节点
      */
-    fun allPerm(): Set<String>
+    fun allPerm(): List<SysPerm>
 }
 
 @Service
@@ -66,5 +67,5 @@ class RoleServiceImpl : RoleService, ServiceImpl<RoleMapper, RoleDo>() {
         return removeById(id)
     }
 
-    override fun allPerm(): Set<String> = perms
+    override fun allPerm() = SysPerm.entries
 }

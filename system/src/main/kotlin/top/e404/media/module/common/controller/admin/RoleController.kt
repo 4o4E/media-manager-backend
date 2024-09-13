@@ -15,6 +15,7 @@ import top.e404.media.module.common.entity.page.PageInfo
 import top.e404.media.module.common.entity.resp
 import top.e404.media.module.common.entity.role.AddRoleDto
 import top.e404.media.module.common.entity.toResp
+import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.common.exception.HttpRequestException
 import top.e404.media.module.common.service.database.RolePermService
 import top.e404.media.module.common.service.database.RoleService
@@ -39,7 +40,7 @@ class RoleController {
 
     @LogAccess
     @GetMapping("")
-    @RequirePerm("user:get")
+    @RequirePerm(SysPerm.ROLE_VIEW)
     @Operation(summary = "分页获取角色")
     fun listRole(pageInfo: PageInfo) = roleService.page(pageInfo.toMybatisPage()).toPageResult {
         it.copyAs(RoleVo::class)
@@ -47,25 +48,25 @@ class RoleController {
 
     @LogAccess
     @GetMapping("/all")
-    @RequirePerm("user:get")
+    @RequirePerm(SysPerm.ROLE_VIEW)
     @Operation(summary = "获取所有角色")
     fun listAllRole() = roleService.list().copyAsList(RoleVo::class).toResp()
 
     @LogAccess
     @GetMapping("/{id}")
-    @RequirePerm("role:get")
+    @RequirePerm(SysPerm.ROLE_VIEW)
     @Operation(summary = "通过id获取角色信息")
     fun getRoleById(@PathVariable id: Long) = roleService.getById(id).copyAs(RoleVo::class).toResp()
 
     @LogAccess
     @GetMapping("/{id}/perms")
-    @RequirePerm("role:get")
+    @RequirePerm(SysPerm.ROLE_PERM_VIEW)
     @Operation(summary = "通过id获取角色所有权限节点")
     fun getPermById(@PathVariable id: Long) = roleService.getPermByRoleId(id).toResp()
 
     @LogAccess
     @PostMapping("/{id}/perms/{perm}")
-    @RequirePerm("role_perm:edit")
+    @RequirePerm(SysPerm.ROLE_PERM_EDIT)
     @Operation(summary = "通过id为角色添加权限节点")
     fun addPerm(@PathVariable id: Long, @PathVariable perm: String): BaseResp<RolePermVo> {
         val rolePermDo = RolePermDo(id, perm)
@@ -75,7 +76,7 @@ class RoleController {
 
     @LogAccess
     @DeleteMapping("/{id}/perms/{perm}")
-    @RequirePerm("role_perm:edit")
+    @RequirePerm(SysPerm.ROLE_PERM_EDIT)
     @Operation(summary = "通过id为角色移除权限节点")
     fun removePerm(@PathVariable id: Long, @PathVariable perm: String): BaseResp<RolePermVo> {
         val rolePermDo = RolePermDo(id, perm)
@@ -90,7 +91,7 @@ class RoleController {
 
     @LogAccess
     @PostMapping("")
-    @RequirePerm("role:save")
+    @RequirePerm(SysPerm.ROLE_EDIT)
     @Operation(summary = "创建角色")
     fun addRole(@RequestBody @Validated dto: AddRoleDto): BaseResp<RoleVo> {
         val roleDo = dto.copyAs(RoleDo::class)
@@ -100,7 +101,7 @@ class RoleController {
 
     @LogAccess
     @DeleteMapping("/{id}")
-    @RequirePerm("role:remove")
+    @RequirePerm(SysPerm.ROLE_EDIT)
     @Operation(summary = "删除角色")
     @Transactional
     fun removeRole(@PathVariable id: Long) {
@@ -112,7 +113,7 @@ class RoleController {
 
     @LogAccess
     @PatchMapping("")
-    @RequirePerm("role:update")
+    @RequirePerm(SysPerm.ROLE_EDIT)
     @Operation(summary = "更新角色数据")
     fun updateRole(@RequestBody @Validated(UpdateValid::class) dto: RoleDto): BaseResp<RoleVo> {
         val roleDo = dto.copyAs(RoleDo::class)

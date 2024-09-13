@@ -30,7 +30,7 @@ class PermCheckAdvice {
         if (current.isExpire) throw AuthorizationExpireException()
 
         // 缺失权限
-        val lack = ann.perms.filter { it !in current.perms }
+        val lack = ann.perms.filter { it.perm !in current.perms }
         if (lack.isNotEmpty()) {
             log.warn("缺失权限: {}", lack)
             throw PermissionDeniedException()
