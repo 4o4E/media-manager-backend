@@ -1,5 +1,8 @@
 package top.e404.media.module.common.enums
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class SysPerm(
     val perm: String,
     @Suppress("UNUSED")
@@ -28,3 +31,11 @@ enum class SysPerm(
     TAG_EDIT("tag:edit", "编辑Tag"),
     ;
 }
+
+data class PermVo(
+    val perm: String,
+    val desc: String,
+    val default: Boolean
+)
+
+fun SysPerm.toVo() = PermVo(perm, desc, default)
