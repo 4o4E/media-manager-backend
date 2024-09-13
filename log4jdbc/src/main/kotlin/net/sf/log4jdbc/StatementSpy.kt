@@ -246,10 +246,10 @@ open class StatementSpy(connectionSpy: ConnectionSpy?, realStatement: Statement?
 
     // implementation of interface methods
     @Throws(SQLException::class)
-    override fun getWarnings(): SQLWarning {
+    override fun getWarnings(): SQLWarning? {
         val methodCall = "getWarnings()"
         try {
-            return reportReturn(methodCall, realStatement.warnings) as SQLWarning
+            return reportReturn(methodCall, realStatement.warnings) as SQLWarning?
         } catch (s: SQLException) {
             reportException(methodCall, s)
             throw s
