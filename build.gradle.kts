@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.spring") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
+    idea
 }
 
 allprojects {
@@ -27,4 +28,10 @@ dependencies {
     implementation(project(":system"))
     implementation(project(":media"))
     implementation(project(":log4jdbc"))
+}
+
+idea {
+    module.excludeDirs.add(file(".run/logs"))
+    module.excludeDirs.add(file(".run/data"))
+    module.excludeDirs.add(file(".kotlin"))
 }
