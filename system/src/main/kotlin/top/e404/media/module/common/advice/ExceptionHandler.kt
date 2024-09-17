@@ -3,13 +3,13 @@ package top.e404.media.module.common.advice
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import top.e404.media.module.common.entity.BaseResp
 import top.e404.media.module.common.exception.HttpRequestException
 import top.e404.media.module.common.exception.NoChangeException
 
@@ -44,15 +44,21 @@ class ExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: DataIntegrityViolationException) = badRequest("该数据已被引用, 无法删除")
+    protected fun exceptionHandler(
+        e: DataIntegrityViolationException
+    ) = badRequest("该数据已被引用, 无法删除")
 
     @ExceptionHandler(NoChangeException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: NoChangeException) = ResponseEntity<Void>(HttpStatus.NOT_MODIFIED)
+    protected fun exceptionHandler(
+        e: NoChangeException
+    ) = ResponseEntity<Void>(HttpStatus.NOT_MODIFIED)
 
     @ExceptionHandler(HttpRequestException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: HttpRequestException) = e.toResponseEntity().also {
+    protected fun exceptionHandler(
+        e: HttpRequestException
+    ) = e.toResponseEntity().also {
         log.debug("responseBody: {}", it.body)
         log.warn(e.message, e)
     }
@@ -66,13 +72,16 @@ class ExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: HttpMessageNotReadableException): ResponseEntity<String?> {
+    protected fun exceptionHandler(e: HttpMessageNotReadableException): ResponseEntity<BaseResp<*>> {
+        log.warn("参数异常", e)
         var t: Throwable = e
         while (t.cause != null) t = t.cause!!
-        return badRequest(t.message)
+        return badRequest(BaseResp(false, t.message!!, null))
     }
 
     @ExceptionHandler(NumberFormatException::class)
     @ResponseBody
-    protected fun exceptionHandler(e: NumberFormatException) = badRequest(e.message)
+    protected fun exceptionHandler(
+        e: NumberFormatException
+    ) = badRequest(BaseResp(false, e.message!!, null))
 }
