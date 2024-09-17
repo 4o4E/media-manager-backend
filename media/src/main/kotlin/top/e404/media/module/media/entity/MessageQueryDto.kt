@@ -13,9 +13,10 @@ import top.e404.media.module.common.util.primitive
 @Serializable
 data class MessageQueryDto(
     @Schema(description = "匹配模式")
+    @Serializable(QueryMode.QueryModeSerializer::class)
     val queryMode: QueryMode = QueryMode.ALL,
     @Schema(description = "目标tag, 多个tag表示精准匹配", required = true)
-    val tags: MutableSet<String>,
+    val tags: MutableSet<Long>,
     @Schema(description = "数量, 受账号等级限制")
     @Range(min = 1, max = 100)
     val count: Long = 1,
