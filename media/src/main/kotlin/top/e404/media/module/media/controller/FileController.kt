@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -12,6 +13,7 @@ import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.common.exception.NotFoundException
+import top.e404.media.module.common.util.ContentType
 import top.e404.media.module.media.service.FileService
 
 @RestController
@@ -22,10 +24,14 @@ class FileController {
     lateinit var fileService: FileService
 
     @LogAccess
-    @GetMapping("/{id}", produces = ["application/octet-stream"])
+    @GetMapping("/{id}")
     @Operation(summary = "通过文件id获取文件")
-    fun getFileById(@PathVariable @Parameter(description = "文件id") id: String) =
-        fileService.getFileResourceBySha(id) ?: throw NotFoundException("文件不存在")
+    fun getFileById(@PathVariable @Parameter(description = "文件id") id: String, resp: HttpServletResponse) {
+        resp.contentType = ContentType[id.substringAfter(".")]
+        val resource = (fileService.getFileResourceBySha(id.substringBefore("."))
+            ?: throw NotFoundException("文件不存在"))
+        resource.inputStream.buffered().use { it.transferTo(resp.outputStream) }
+    }
 
     @LogAccess
     @PostMapping("/{sha}/exists")
