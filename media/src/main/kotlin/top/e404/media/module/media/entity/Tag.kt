@@ -35,3 +35,24 @@ data class TagDo(
     @field:TableField(fill = FieldFill.INSERT_UPDATE)
     var updateTime: Long? = null,
 )
+
+@Serializable
+data class TagVo(
+    val id: Long,
+    val name: String,
+    val description: String,
+    val alias: List<String>
+)
+
+@Serializable
+data class CreateTagDto(
+    val name: String,
+    val description: String,
+    val alias: List<String>
+)
+
+@Serializable
+data class TagDto(
+    val name: String,
+    val description: String
+)
