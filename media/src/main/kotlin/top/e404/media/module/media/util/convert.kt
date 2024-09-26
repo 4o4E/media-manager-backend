@@ -1,6 +1,7 @@
 package top.e404.media.module.media.util
 
 import com.github.jershell.kbson.KBson
+import com.mongodb.client.MongoIterable
 import org.bson.BsonDocument
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -20,4 +21,6 @@ lateinit var kbson: KBson
 /**
  * 将bsonDocument转换为MessageData
  */
-fun BsonDocument.toMessageData() = kbson.load(MessageData.serializer(), this)
+fun BsonDocument.toMessageData(): MessageData = kbson.parse(MessageData.serializer(), this)
+fun MongoIterable<BsonDocument>.toMessageData() = map { it.toMessageData() }.toList()
+fun MessageData.toBsonDocument() = kbson.stringify(MessageData.serializer(), this)

@@ -7,21 +7,18 @@ import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.result.UpdateResult
 import org.bson.BsonDocument
 import org.bson.BsonString
+import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import top.e404.media.module.common.advice.currentUser
 import top.e404.media.module.common.entity.page.PageInfo
-import top.e404.media.module.media.entity.MessageData
-import top.e404.media.module.media.entity.MessageDto
-import top.e404.media.module.media.entity.MessageQueryDto
-import top.e404.media.module.media.entity.QueryMode
+import top.e404.media.module.common.entity.page.PageResult
+import top.e404.media.module.media.entity.*
 import top.e404.media.module.media.entity.comment.MessageComment
 import top.e404.media.module.media.entity.comment.MessageCommentDto
 import top.e404.media.module.media.entity.data.BinaryMessage
-import top.e404.media.module.media.entity.ApprovedState
-import top.e404.media.module.media.entity.MessageType
 import top.e404.media.module.media.util.*
 import java.time.LocalDateTime
 import java.util.*
@@ -77,6 +74,11 @@ interface MessageService {
      * 分页获取
      */
     fun random(count: Long): List<MessageData>
+
+    /**
+     * 按顺序分页搜索
+     */
+    fun list(dto: MessageListOption): PageResult<MessageData, Void>
 }
 
 @Service
@@ -128,12 +130,10 @@ class MessageServiceImpl : MessageService {
         }
         val sha = chain.sha()
         val upload = currentUser!!.user.id!!
-        val exists = media.find(BsonDocument("id", BsonString(id))).firstOrNull()
-        if (exists != null) return kBson.load(MessageData.serializer(), exists)
         val exists = media.find(BsonDocument("sha", BsonString(sha))).firstOrNull()
+        if (exists != null) return exists.toMessageData()
 
         val data = MessageData(
-            id,
             ObjectId(Date()).toHexString(),
             sha,
             upload,
@@ -144,7 +144,7 @@ class MessageServiceImpl : MessageService {
             chain
         )
 
-        val result = media.insertOne(kBson.stringify(MessageData.serializer(), data))
+        val result = media.insertOne(data.toBsonDocument())
         if (!result.wasAcknowledged()) throw IllegalArgumentException("already exists")
         return data
     }
@@ -156,9 +156,8 @@ class MessageServiceImpl : MessageService {
         }
         val sha = chain.sha()
         val upload = currentUser!!.user.id!!
-        val exists = media.find(BsonDocument("id", BsonString(id))).firstOrNull()
-        if (exists != null) return kBson.load(MessageData.serializer(), exists)
         val exists = media.find(BsonDocument("sha", BsonString(sha))).firstOrNull()
+        if (exists != null) return exists.toMessageData()
 
         val data = MessageData(
             ObjectId(Date(time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000)).toHexString(),
@@ -171,7 +170,7 @@ class MessageServiceImpl : MessageService {
             chain,
         )
 
-        val result = media.insertOne(kBson.stringify(MessageData.serializer(), data))
+        val result = media.insertOne(data.toBsonDocument())
         if (!result.wasAcknowledged()) throw IllegalArgumentException("already exists")
         return data
     }
@@ -243,6 +242,32 @@ class MessageServiceImpl : MessageService {
             mutableListOf(
                 bsonSample(count)
             )
-        ).map { kBson.parse(MessageData.serializer(), it) }.toList()
+        ).toMessageData()
+    }
+
+    override fun list(dto: MessageListOption): PageResult<MessageData, Void> {
+        if (dto.tags.isEmpty()) {
+            val total = media.countDocuments()
+            val data = media.aggregate(
+                mutableListOf(
+                    bsonSkip((dto.page - 1) * dto.size),
+                    bsonLimit(dto.size)
+                )
+            ).toMessageData()
+            return PageResult(data, total)
+        }
+        val query = when (dto.queryMode) {
+            QueryMode.ANY -> bson("tags", bsonIn(bsonArray(dto.tags)))
+            QueryMode.ALL -> bson("tags", bsonAll(bsonArray(dto.tags)))
+        }
+        val total = media.countDocuments(query)
+        val data = media.aggregate(
+            mutableListOf(
+                bsonMatch(query),
+                bsonSkip((dto.page - 1) * dto.size),
+                bsonLimit(dto.size)
+            )
+        ).toMessageData()
+        return PageResult(data, total)
     }
 }
