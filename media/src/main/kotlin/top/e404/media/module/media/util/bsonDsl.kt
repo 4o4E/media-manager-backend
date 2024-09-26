@@ -104,3 +104,7 @@ fun bsonSlice(array: BsonArray) = BsonDocument("\$slice", array)
 fun bsonSlice(vararg values: BsonValue) = BsonDocument("\$slice", bsonArray(*values))
 // 随机选择
 fun bsonSample(count: Long) = BsonDocument("\$sample", bson("size", count))
+// 跳过
+fun bsonSkip(count: Long) = bson("\$skip", count)
+// 限制大小
+fun bsonLimit(count: Long) = bson("\$limit", count)
