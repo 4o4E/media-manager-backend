@@ -12,6 +12,8 @@ data class MessageData(
     @Schema(description = "消息唯一id")
     @SerialName("_id")
     val id: String,
+    @Schema(description = "消息签名")
+    val sha: String,
     @Schema(description = "上传者")
     val upload: Long,
     @Schema(description = "上传时间")
@@ -27,4 +29,3 @@ data class MessageData(
     @Schema(description = "消息内容")
     val content: List<Message>,
 )
-

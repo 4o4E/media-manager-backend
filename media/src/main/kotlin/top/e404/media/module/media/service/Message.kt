@@ -126,13 +126,16 @@ class MessageServiceImpl : MessageService {
         require(tagService.allExist(tags)) {
             "消息中的tag不存在"
         }
-        val id = chain.sha()
+        val sha = chain.sha()
         val upload = currentUser!!.user.id!!
         val exists = media.find(BsonDocument("id", BsonString(id))).firstOrNull()
         if (exists != null) return kBson.load(MessageData.serializer(), exists)
+        val exists = media.find(BsonDocument("sha", BsonString(sha))).firstOrNull()
 
         val data = MessageData(
             id,
+            ObjectId(Date()).toHexString(),
+            sha,
             upload,
             System.currentTimeMillis(),
             MessageType.byMessage(chain),
@@ -151,13 +154,15 @@ class MessageServiceImpl : MessageService {
         require(fileService.allExists(chain.filterIsInstance<BinaryMessage>().map(BinaryMessage::id))) {
             "消息中的二进制文件不存在"
         }
-        val id = chain.sha()
+        val sha = chain.sha()
         val upload = currentUser!!.user.id!!
         val exists = media.find(BsonDocument("id", BsonString(id))).firstOrNull()
         if (exists != null) return kBson.load(MessageData.serializer(), exists)
+        val exists = media.find(BsonDocument("sha", BsonString(sha))).firstOrNull()
 
         val data = MessageData(
-            id,
+            ObjectId(Date(time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000)).toHexString(),
+            sha,
             upload,
             time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000,
             MessageType.byMessage(chain),
