@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Pattern
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import top.e404.media.module.media.entity.MessageVisitor
 
 /**
@@ -27,6 +28,9 @@ data class AudioMessage(
     companion object {
         const val IDENTIFY = "audio"
     }
+
+    @Transient
+    val type = IDENTIFY
 
     override fun sign(visitor: MessageVisitor) = visitor.visit(id)
 }

@@ -2,6 +2,7 @@ package top.e404.media.module.media.entity.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import top.e404.media.module.media.entity.MessageVisitor
 
 /**
@@ -23,6 +24,9 @@ data class SpeakMessage(
     companion object {
         const val IDENTIFY = "speak"
     }
+
+    @Transient
+    val type = IDENTIFY
 
     override fun sign(visitor: MessageVisitor) {
         visitor.visit(senderName)
