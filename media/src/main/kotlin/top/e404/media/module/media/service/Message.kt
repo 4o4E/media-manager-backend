@@ -250,6 +250,7 @@ class MessageServiceImpl : MessageService {
             val total = media.countDocuments()
             val data = media.aggregate(
                 mutableListOf(
+                    bsonSort("time", true),
                     bsonSkip((dto.page - 1) * dto.size),
                     bsonLimit(dto.size)
                 )
