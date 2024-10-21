@@ -30,7 +30,7 @@ class MessageController {
     // fun getById(@PathVariable id: String) = messageService.getById(id) ?: throw NotFoundException
 
     @LogAccess
-    @PostMapping("")
+    @PostMapping("/query")
     @RequirePerm(SysPerm.MESSAGE_QUERY)
     @Operation(summary = "通过高级查询获取message")
     fun queryMessage(@RequestBody dto: MessageQueryDto) = messageService.query(dto).toResp()
