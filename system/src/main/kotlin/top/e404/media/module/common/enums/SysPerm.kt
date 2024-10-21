@@ -22,6 +22,7 @@ enum class SysPerm(
     MESSAGE_UPLOAD("message:upload", "上传消息"),
     MESSAGE_LIST("message:list", "列出消息"),
     MESSAGE_EDIT("message:edit", "编辑消息"),
+    MESSAGE_SKIP_APPROVAL("message:approval:skip", "跳过消息审核"),
     MESSAGE_COMMENT_VIEW("message:comment:view", "浏览消息评论", true),
     MESSAGE_COMMENT_EDIT("message:comment:edit", "编辑消息评论"),
     MESSAGE_COMMENT_POST("message:comment:post", "发送消息评论"),
