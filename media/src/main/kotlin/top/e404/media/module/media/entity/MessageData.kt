@@ -17,7 +17,9 @@ data class MessageData(
     @Schema(description = "上传者")
     val upload: Long,
     @Schema(description = "上传时间")
-    val time: Long,
+    val created: Long,
+    @Schema(description = "最近更新时间")
+    val updated: Long,
     @Schema(description = "消息类型")
     val type: MessageType,
     @Schema(description = "审核状态")
