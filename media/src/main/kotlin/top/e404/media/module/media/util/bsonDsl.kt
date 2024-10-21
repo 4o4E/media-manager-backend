@@ -47,6 +47,7 @@ fun BsonDocument.deepPut(vararg path: String, value: BsonValue) = apply {
 fun bsonArray(vararg elements: BsonValue) = BsonArray(elements.toList())
 fun bsonArray(vararg list: String) = BsonArray(list.map(::BsonString))
 inline fun <reified T : Any> bsonArray(elements: Collection<T>): BsonArray = bsonArray(elements, T::class)
+inline fun <reified T : Any> Collection<T>.toBsonArray(): BsonArray = bsonArray(this)
 
 @PublishedApi
 internal fun <T : Any> bsonArray(elements: Collection<T>, cls: KClass<T>): BsonArray {
@@ -58,7 +59,10 @@ internal fun <T : Any> bsonArray(elements: Collection<T>, cls: KClass<T>): BsonA
         Long::class -> (elements as Collection<Long>).map(::BsonInt64)
         Float::class -> (elements as Collection<Float>).map { BsonDouble(it.toDouble()) }
         Double::class -> (elements as Collection<Double>).map(::BsonDouble)
-        else -> throw IllegalArgumentException("cannot cast ${cls.qualifiedName} to BsonValue")
+        else -> {
+            if (BsonValue::class.java.isAssignableFrom(cls.java)) elements.map { it as BsonValue }
+            else throw IllegalArgumentException("cannot cast ${cls.qualifiedName} to BsonValue")
+        }
     }.let(::BsonArray)
 }
 

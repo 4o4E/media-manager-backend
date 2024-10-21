@@ -12,3 +12,13 @@ data class MessageDto(
     @Schema(description = "该消息的tag")
     val tags: MutableSet<Long>
 )
+
+@Schema(description = "消息更新")
+@Serializable
+data class MessageUpdateDto(
+    val id: String,
+    @Schema(description = "消息的具体数据")
+    val chain: MutableList<Message>,
+    @Schema(description = "该消息的tag")
+    val tags: MutableSet<Long>
+)

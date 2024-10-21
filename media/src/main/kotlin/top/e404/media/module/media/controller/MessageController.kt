@@ -13,6 +13,7 @@ import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.media.entity.MessageDto
 import top.e404.media.module.media.entity.MessageQueryDto
+import top.e404.media.module.media.entity.MessageUpdateDto
 import top.e404.media.module.media.entity.comment.MessageCommentDto
 import top.e404.media.module.media.service.MessageService
 
@@ -42,10 +43,16 @@ class MessageController {
     fun listMessage(@Validated @Max(20) count: Long) = messageService.random(count).toResp()
 
     @LogAccess
-    @PutMapping("")
+    @PostMapping("")
     @RequirePerm(SysPerm.MESSAGE_UPLOAD)
     @Operation(summary = "上传message", description = "上传message前需要先上传二进制文件")
     fun saveMessage(@RequestBody dto: MessageDto) = messageService.save(dto).toResp()
+
+    @LogAccess
+    @PutMapping("")
+    @RequirePerm(SysPerm.MESSAGE_EDIT)
+    @Operation(summary = "更新message", description = "上传message前需要先上传二进制文件")
+    fun updateMessage(@RequestBody dto: MessageUpdateDto) = messageService.update(dto).toResp()
 
     // 评论
 

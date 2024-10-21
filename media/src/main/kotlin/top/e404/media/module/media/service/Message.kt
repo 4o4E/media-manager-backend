@@ -15,10 +15,13 @@ import org.springframework.stereotype.Service
 import top.e404.media.module.common.advice.currentUser
 import top.e404.media.module.common.entity.page.PageInfo
 import top.e404.media.module.common.entity.page.PageResult
+import top.e404.media.module.common.enums.SysPerm
+import top.e404.media.module.common.exception.NotFoundException
 import top.e404.media.module.media.entity.*
 import top.e404.media.module.media.entity.comment.MessageComment
 import top.e404.media.module.media.entity.comment.MessageCommentDto
 import top.e404.media.module.media.entity.data.BinaryMessage
+import top.e404.media.module.media.entity.data.Message
 import top.e404.media.module.media.util.*
 import java.time.LocalDateTime
 import java.util.*
@@ -39,6 +42,11 @@ interface MessageService {
      * 上传新的message
      */
     fun save(dto: MessageDto): MessageData
+
+    /**
+     * 更新message
+     */
+    fun update(dto: MessageUpdateDto)
 
     /**
      * 导入message
@@ -138,8 +146,9 @@ class MessageServiceImpl : MessageService {
             sha,
             upload,
             System.currentTimeMillis(),
+            System.currentTimeMillis(),
             MessageType.byMessage(chain),
-            ApprovedState.WAIT,
+            if (currentUser!!.perms.contains(SysPerm.MESSAGE_SKIP_APPROVAL.perm)) ApprovedState.PASS else ApprovedState.WAIT,
             tags,
             chain
         )
@@ -147,6 +156,20 @@ class MessageServiceImpl : MessageService {
         val result = media.insertOne(data.toBsonDocument())
         if (!result.wasAcknowledged()) throw IllegalArgumentException("already exists")
         return data
+    }
+
+    override fun update(dto: MessageUpdateDto) {
+        val (id, chain, tags) = dto
+        val result = media.updateOne(
+            bson("_id", id),
+            bsonSet(
+                buildBson {
+                    put("content", chain.map { kbson.stringify(Message.serializer(), it) }.toBsonArray())
+                    put("tags", tags.map(::bson).toBsonArray())
+                }
+            )
+        )
+        if (result.matchedCount == 0L) throw NotFoundException()
     }
 
     override fun import(dto: MessageDto, time: LocalDateTime): MessageData {
@@ -159,11 +182,13 @@ class MessageServiceImpl : MessageService {
         val exists = media.find(BsonDocument("sha", BsonString(sha))).firstOrNull()
         if (exists != null) return exists.toMessageData()
 
+        val stamp = time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000
         val data = MessageData(
-            ObjectId(Date(time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000)).toHexString(),
+            ObjectId(Date(stamp)).toHexString(),
             sha,
             upload,
-            time.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond() * 1000,
+            stamp,
+            stamp,
             MessageType.byMessage(chain),
             ApprovedState.PASS,
             tags,
@@ -250,7 +275,7 @@ class MessageServiceImpl : MessageService {
             val total = media.countDocuments()
             val data = media.aggregate(
                 mutableListOf(
-                    bsonSort("time", true),
+                    bsonSort("created", true),
                     bsonSkip((dto.page - 1) * dto.size),
                     bsonLimit(dto.size)
                 )
