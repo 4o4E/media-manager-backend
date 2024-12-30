@@ -3,18 +3,15 @@ package top.e404.media.module.common.mapper
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
-import top.e404.media.module.common.entity.auth.RoleDo
+import top.e404.media.module.common.entity.database.RoleDo
 
 @Mapper
 interface RoleMapper : BaseMapper<RoleDo> {
     @Select(
-        """SELECT r.* FROM sys_role r WHERE r.id IN (
-            SELECT ur.role_id FROM sys_user_role ur WHERE ur.user_id = #{userId}
+        """SELECT r.* FROM sys_role AS r WHERE r.id IN (
+            SELECT unnest("user".roles) FROM sys_user AS "user" WHERE "user".id = #{userId}
         )
         """
     )
     fun getByUserId(userId: Long): List<RoleDo>
-
-    @Select("SELECT rp.perm FROM sys_role_perm rp WHERE rp.role = #{roleId}")
-    fun getPermByRoleId(roleId: Long): List<String>
 }

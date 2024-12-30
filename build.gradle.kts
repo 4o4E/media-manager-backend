@@ -26,8 +26,8 @@ allprojects {
 
 dependencies {
     implementation(project(":system"))
-    implementation(project(":media"))
-    implementation(project(":log4jdbc"))
+    // implementation(project(":media"))
+    implementation("ru.vasiand:spring-boot-starter-log4jdbc:1.1.0")
 }
 
 idea {

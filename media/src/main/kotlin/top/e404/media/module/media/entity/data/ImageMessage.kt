@@ -5,8 +5,7 @@ import jakarta.validation.constraints.Pattern
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import top.e404.media.module.media.entity.MessageVisitor
-import top.e404.media.module.media.entity.data.AudioMessage.Companion
+import top.e404.media.module.media.entity.MediaElementVisitor
 
 /**
  * 图片消息
@@ -36,5 +35,5 @@ data class ImageMessage(
     @Transient
     val type = IDENTIFY
 
-    override fun sign(visitor: MessageVisitor) = visitor.visit(id)
+    override fun sign(visitor: MediaElementVisitor) = visitor.visit(id)
 }

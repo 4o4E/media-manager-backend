@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import top.e404.media.module.common.advice.currentUser
-import top.e404.media.module.common.entity.page.PageInfo
-import top.e404.media.module.common.entity.page.PageResult
+import top.e404.media.module.common.entity.dto.page.PageInfo
+import top.e404.media.module.common.entity.dto.page.PageResult
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.common.exception.NotFoundException
 import top.e404.media.module.media.entity.*
@@ -86,7 +86,7 @@ interface MessageService {
     /**
      * 按顺序分页搜索
      */
-    fun list(dto: MessageListOption): PageResult<MessageData, Void>
+    fun list(dto: MediaListOption): PageResult<MessageData, Void>
 }
 
 @Service
@@ -147,7 +147,7 @@ class MessageServiceImpl : MessageService {
             upload,
             System.currentTimeMillis(),
             System.currentTimeMillis(),
-            MessageType.byMessage(chain),
+            MediaType.byMessage(chain),
             if (currentUser!!.perms.contains(SysPerm.MESSAGE_SKIP_APPROVAL.perm)) ApprovedState.PASS else ApprovedState.WAIT,
             tags,
             chain
@@ -162,12 +162,11 @@ class MessageServiceImpl : MessageService {
         val (id, chain, tags) = dto
         val result = media.updateOne(
             bson("_id", id),
-            bsonSet(
-                buildBson {
-                    put("content", chain.map { kbson.stringify(Message.serializer(), it) }.toBsonArray())
-                    put("tags", tags.map(::bson).toBsonArray())
-                }
-            )
+            bsonSet(buildBson {
+                put("content", chain.map { kbson.stringify(Message.serializer(), it) }.toBsonArray())
+                put("tags", tags.map(::bson).toBsonArray())
+                put("type", bson(MediaType.byMessage(chain).name))
+            })
         )
         if (result.matchedCount == 0L) throw NotFoundException()
     }
@@ -189,7 +188,7 @@ class MessageServiceImpl : MessageService {
             upload,
             stamp,
             stamp,
-            MessageType.byMessage(chain),
+            MediaType.byMessage(chain),
             ApprovedState.PASS,
             tags,
             chain,
@@ -270,7 +269,7 @@ class MessageServiceImpl : MessageService {
         ).toMessageData()
     }
 
-    override fun list(dto: MessageListOption): PageResult<MessageData, Void> {
+    override fun list(dto: MediaListOption): PageResult<MessageData, Void> {
         if (dto.tags.isEmpty()) {
             val total = media.countDocuments()
             val data = media.aggregate(

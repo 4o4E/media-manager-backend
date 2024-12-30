@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage
 import com.baomidou.mybatisplus.core.metadata.OrderItem
 import com.baomidou.mybatisplus.core.toolkit.StringUtils
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page
-import top.e404.media.module.common.entity.page.PageInfo
-import top.e404.media.module.common.entity.page.PageResult
+import top.e404.media.module.common.entity.dto.page.PageInfo
+import top.e404.media.module.common.entity.dto.page.PageResult
 import top.e404.media.module.common.entity.toResp
 
 /**

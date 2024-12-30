@@ -35,7 +35,8 @@ dependencies {
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("io.projectreactor.kotlin:reactor-kotlin-extensions")
     api("org.jetbrains.kotlin:kotlin-reflect")
-    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("org.postgresql:postgresql:42.7.3")
+    // runtimeOnly("com.mysql:mysql-connector-j")
     // runtimeOnly("com.sun.mail:jakarta.mail:2.0.1")
 
     // serialization

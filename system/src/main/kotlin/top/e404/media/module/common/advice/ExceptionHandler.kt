@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import top.e404.media.module.common.entity.BaseResp
+import top.e404.media.module.common.exception.CommonFail
 import top.e404.media.module.common.exception.HttpRequestException
 import top.e404.media.module.common.exception.NoChangeException
 
@@ -76,12 +77,12 @@ class ExceptionHandler {
         log.warn("参数异常", e)
         var t: Throwable = e
         while (t.cause != null) t = t.cause!!
-        return badRequest(BaseResp(false, t.message!!, null))
+        return badRequest(BaseResp.fail(CommonFail.BAD_REQUEST.code, t.message!!))
     }
 
     @ExceptionHandler(NumberFormatException::class)
     @ResponseBody
     protected fun exceptionHandler(
         e: NumberFormatException
-    ) = badRequest(BaseResp(false, e.message!!, null))
+    ) = badRequest(BaseResp.fail(CommonFail.BAD_REQUEST.code, e.message!!))
 }

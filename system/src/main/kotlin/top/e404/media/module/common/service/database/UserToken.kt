@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
-import top.e404.media.module.common.entity.auth.UserDo
-import top.e404.media.module.common.entity.auth.UserTokenDo
+import top.e404.media.module.common.entity.database.UserDo
+import top.e404.media.module.common.entity.database.UserTokenDo
 import top.e404.media.module.common.mapper.UserTokenMapper
 import top.e404.media.module.common.util.log
 import top.e404.media.module.common.util.query

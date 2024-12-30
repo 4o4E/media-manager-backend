@@ -10,14 +10,15 @@ import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.BaseResp
 import top.e404.media.module.common.entity.UpdateValid
-import top.e404.media.module.common.entity.auth.*
-import top.e404.media.module.common.entity.page.PageInfo
+import top.e404.media.module.common.entity.database.RoleDo
+import top.e404.media.module.common.entity.database.RoleDto
+import top.e404.media.module.common.entity.database.RoleVo
+import top.e404.media.module.common.entity.dto.page.PageInfo
+import top.e404.media.module.common.entity.dto.role.AddRoleDto
 import top.e404.media.module.common.entity.resp
-import top.e404.media.module.common.entity.role.AddRoleDto
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
-import top.e404.media.module.common.exception.HttpRequestException
-import top.e404.media.module.common.service.database.RolePermService
+import top.e404.media.module.common.exception.notFound
 import top.e404.media.module.common.service.database.RoleService
 import top.e404.media.module.common.util.*
 
@@ -28,9 +29,6 @@ import top.e404.media.module.common.util.*
 class RoleController {
     @set:Autowired
     lateinit var roleService: RoleService
-
-    @set:Autowired
-    lateinit var rolePermService: RolePermService
 
     @LogAccess
     @GetMapping("/allPerm")
@@ -62,31 +60,32 @@ class RoleController {
     @GetMapping("/{id}/perms")
     @RequirePerm(SysPerm.ROLE_PERM_VIEW)
     @Operation(summary = "通过id获取角色所有权限节点")
-    fun getPermById(@PathVariable id: Long) = roleService.getPermByRoleId(id).toResp()
+    fun getPermById(@PathVariable id: Long) = roleService.getRolePerms(id).toResp()
 
     @LogAccess
     @PostMapping("/{id}/perms/{perm}")
     @RequirePerm(SysPerm.ROLE_PERM_EDIT)
     @Operation(summary = "通过id为角色添加权限节点")
-    fun addPerm(@PathVariable id: Long, @PathVariable perm: String): BaseResp<RolePermVo> {
-        val rolePermDo = RolePermDo(id, perm)
-        if (!rolePermService.save(rolePermDo)) throw HttpRequestException("没有对应的角色")
-        return rolePermDo.copyAs(RolePermVo::class).toResp()
+    fun addPerm(@PathVariable id: Long, @PathVariable perm: String): BaseResp<Nothing> {
+        val success = roleService.update(null, update {
+            eq(RoleDo::id, id)
+            setSql("perms = IF(array_position(perms, {0}) IS NULL, array_append(perms, {1}), perms)", perm, perm)
+        })
+        if (!success) notFound("角色")
+        return BaseResp.ok()
     }
 
     @LogAccess
     @DeleteMapping("/{id}/perms/{perm}")
     @RequirePerm(SysPerm.ROLE_PERM_EDIT)
     @Operation(summary = "通过id为角色移除权限节点")
-    fun removePerm(@PathVariable id: Long, @PathVariable perm: String): BaseResp<RolePermVo> {
-        val rolePermDo = RolePermDo(id, perm)
-        if (!rolePermService.remove(
-                query {
-                    eq(RolePermDo::role, id).eq(RolePermDo::perm, perm)
-                }
-            )
-        ) throw HttpRequestException("没有对应的角色权限")
-        return rolePermDo.copyAs(RolePermVo::class).toResp()
+    fun removePerm(@PathVariable id: Long, @PathVariable perm: String): BaseResp<Nothing> {
+        val success = roleService.update(null, update {
+            eq(RoleDo::id, id)
+            setSql("perms = array_remove(perms, {0})", perm)
+        })
+        if (!success) notFound("角色")
+        return BaseResp.ok()
     }
 
     @LogAccess
@@ -104,11 +103,9 @@ class RoleController {
     @RequirePerm(SysPerm.ROLE_EDIT)
     @Operation(summary = "删除角色")
     @Transactional
-    fun removeRole(@PathVariable id: Long) {
-        rolePermService.remove(query {
-            eq(RolePermDo::role, id)
-        })
-        if (!roleService.remove(id)) throw HttpRequestException("没有对应的角色")
+    fun removeRole(@PathVariable id: Long): BaseResp<Nothing> {
+        if (!roleService.remove(id)) notFound("角色")
+        return BaseResp.ok()
     }
 
     @LogAccess

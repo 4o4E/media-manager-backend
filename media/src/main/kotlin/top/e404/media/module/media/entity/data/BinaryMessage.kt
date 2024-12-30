@@ -4,8 +4,7 @@ import jakarta.validation.constraints.Pattern
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import top.e404.media.module.media.entity.MessageVisitor
-import top.e404.media.module.media.entity.data.AudioMessage.Companion
+import top.e404.media.module.media.entity.MediaElementVisitor
 
 /**
  * 包含了二进制数据的基础消息, 包括图片, 视频, 音频
@@ -31,5 +30,5 @@ data class BinaryMessage(
     @Transient
     val type = IDENTIFY
 
-    override fun sign(visitor: MessageVisitor) = visitor.visit(id)
+    override fun sign(visitor: MediaElementVisitor) = visitor.visit(id)
 }

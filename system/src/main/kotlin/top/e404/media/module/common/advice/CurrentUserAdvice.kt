@@ -9,11 +9,9 @@ import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-import top.e404.media.module.common.entity.auth.RoleDo
-import top.e404.media.module.common.entity.auth.RolePermDo
-import top.e404.media.module.common.entity.auth.UserDo
-import top.e404.media.module.common.entity.auth.UserTokenDo
-import top.e404.media.module.common.service.database.RolePermService
+import top.e404.media.module.common.entity.database.RoleDo
+import top.e404.media.module.common.entity.database.UserDo
+import top.e404.media.module.common.entity.database.UserTokenDo
 import top.e404.media.module.common.service.database.RoleService
 import top.e404.media.module.common.service.database.UserService
 import top.e404.media.module.common.service.database.UserTokenService
@@ -37,9 +35,6 @@ class CurrentUserAdvice {
 
     @set:Autowired
     lateinit var roleService: RoleService
-
-    @set:Autowired
-    lateinit var rolePermService: RolePermService
 
     @set:Autowired
     lateinit var tokenService: UserTokenService
@@ -74,10 +69,7 @@ class CurrentUserAdvice {
         }) ?: return joinPoint.proceed()
         val userDo = userService.getById(tokenDo.userId!!)
         val roles = roleService.getRoleByUserId(tokenDo.userId!!).toSet()
-        val perms = if (roles.isEmpty()) emptySet() else rolePermService.list(query {
-            select(RolePermDo::role, RolePermDo::perm)
-            `in`(RolePermDo::role, roles.map(RoleDo::id))
-        }).asSequence().map { it.perm!! }.toSet()
+        val perms = roles.flatMap { it.perms!! }.toSet()
         val current = CurrentUser(userDo, tokenDo, roles, perms)
         // 缓存
         currentUserCache[token] = current

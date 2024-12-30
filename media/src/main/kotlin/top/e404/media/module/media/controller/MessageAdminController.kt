@@ -11,7 +11,7 @@ import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
-import top.e404.media.module.media.entity.MessageListOption
+import top.e404.media.module.media.entity.MediaListOption
 import top.e404.media.module.media.service.MessageService
 
 @RestController
@@ -26,7 +26,7 @@ class MessageAdminController {
     @RequirePerm(SysPerm.MESSAGE_QUERY)
     @Operation(summary = "通过高级查询获取message")
     fun listMessage(
-        @RequestBody dto: MessageListOption
+        @RequestBody dto: MediaListOption
     ) = messageService.list(dto).toResp()
 
 }

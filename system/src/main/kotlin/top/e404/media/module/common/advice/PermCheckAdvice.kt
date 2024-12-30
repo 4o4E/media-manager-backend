@@ -6,9 +6,8 @@ import org.aspectj.lang.annotation.Before
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import top.e404.media.module.common.annontation.RequirePerm
-import top.e404.media.module.common.exception.AuthorizationExpireException
-import top.e404.media.module.common.exception.PermissionDeniedException
-import top.e404.media.module.common.exception.UnauthorizedException
+import top.e404.media.module.common.exception.AuthFail
+import top.e404.media.module.common.exception.fail
 import top.e404.media.module.common.util.log
 
 /**
@@ -26,14 +25,14 @@ class PermCheckAdvice {
     @Before("@annotation(ann)")
     private fun checkPerm(joinPoint: JoinPoint, ann: RequirePerm) {
         if (ann.perms.isEmpty()) return
-        val current = currentUser ?: throw UnauthorizedException()
-        if (current.isExpire) throw AuthorizationExpireException()
+        val current = currentUser ?: error(AuthFail.UNAUTHORIZED)
+        if (current.isExpire) AuthFail.AUTH_EXPIRE.thr()
 
         // 缺失权限
         val lack = ann.perms.filter { it.perm !in current.perms }
         if (lack.isNotEmpty()) {
             log.warn("缺失权限: {}", lack)
-            throw PermissionDeniedException()
+            fail(AuthFail.PERMISSION_DENIED)
         }
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import top.e404.media.module.common.entity.auth.LoginDto
+import top.e404.media.module.common.entity.database.LoginDto
 import top.e404.media.module.common.service.system.AuthService
 
 @AutoConfigureMockMvc

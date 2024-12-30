@@ -4,22 +4,22 @@ import com.baomidou.mybatisplus.extension.service.IService
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import top.e404.media.module.common.entity.auth.RoleDo
-import top.e404.media.module.common.entity.auth.RolePermDo
-import top.e404.media.module.common.entity.auth.UserDo
+import top.e404.media.module.common.entity.database.RoleDo
+import top.e404.media.module.common.entity.database.UserDo
+import top.e404.media.module.common.exception.CommonFail
+import top.e404.media.module.common.exception.fail
 import top.e404.media.module.common.mapper.UserMapper
-import top.e404.media.module.common.util.query
 
 interface UserService : IService<UserDo> {
     /**
      * 通过用户id查询其角色
      */
-    fun getRoleById(id: Long): List<RoleDo>
+    fun getUserRoles(id: Long): List<RoleDo>
 
     /**
      * 通过用户id查询其权限
      */
-    fun getPermById(id: Long): Set<String>
+    fun getUserPerms(id: Long): Set<String>
 }
 
 @Service
@@ -27,26 +27,12 @@ class UserServiceImpl : UserService, ServiceImpl<UserMapper, UserDo>() {
     @set:Autowired
     lateinit var roleService: RoleService
 
-    @set:Autowired
-    lateinit var userRoleService: RoleService
-
-    @set:Autowired
-    lateinit var rolePermService: RolePermService
-
-
-    override fun getRoleById(id: Long): List<RoleDo> {
-        val roles = userRoleService.getRoleByUserId(id).map { it.id!! }
-
-        return if (roles.isEmpty()) emptyList() else roleService.list(query { `in`(RoleDo::id, roles) })
+    override fun getUserRoles(id: Long): List<RoleDo> {
+        val user = getById(id) ?: fail(CommonFail.NOT_FOUND, "用户")
+        return roleService.listByIds(user.roles)
     }
 
-    override fun getPermById(id: Long): Set<String> {
-        val roleIdList = getRoleById(id).map { it.id!! }
-        return if (roleIdList.isEmpty()) emptySet()
-        else rolePermService.list(query {
-            select(RolePermDo::perm)
-            `in`(RolePermDo::role, roleIdList)
-        }).map { it.perm!! }.toSet()
-
+    override fun getUserPerms(id: Long): Set<String> {
+        return getUserRoles(id).flatMap { it.perms!! }.toSet()
     }
 }

@@ -21,7 +21,7 @@ data class MessageQueryDto(
     @Range(min = 1, max = 100)
     val count: Long = 1,
     @Schema(description = "指定消息类型")
-    val type: MessageType? = null
+    val type: MediaType? = null
 )
 
 @Serializable(QueryMode.QueryModeSerializer::class)

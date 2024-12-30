@@ -3,7 +3,7 @@ package top.e404.media.module.media.entity.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import top.e404.media.module.media.entity.MessageVisitor
+import top.e404.media.module.media.entity.MediaElementVisitor
 
 /**
  * 发言消息, 用于组成聊天记录
@@ -28,7 +28,7 @@ data class SpeakMessage(
     @Transient
     val type = IDENTIFY
 
-    override fun sign(visitor: MessageVisitor) {
+    override fun sign(visitor: MediaElementVisitor) {
         visitor.visit(senderName)
         visitor.visit(senderFace)
         visitor.visit(time)

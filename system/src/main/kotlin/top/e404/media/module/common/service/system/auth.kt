@@ -1,17 +1,15 @@
 package top.e404.media.module.common.service.system
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import top.e404.media.module.common.advice.currentUser
-import top.e404.media.module.common.entity.auth.*
-import top.e404.media.module.common.exception.HttpRequestException
-import top.e404.media.module.common.exception.SimplePasswordException
-import top.e404.media.module.common.exception.WrongPasswordException
+import top.e404.media.module.common.entity.database.*
+import top.e404.media.module.common.exception.AuthFail
+import top.e404.media.module.common.exception.fail
 import top.e404.media.module.common.service.database.ForgetPasswordService
 import top.e404.media.module.common.service.database.UserBindService
 import top.e404.media.module.common.service.database.UserService
@@ -19,6 +17,7 @@ import top.e404.media.module.common.service.database.UserTokenService
 import top.e404.media.module.common.util.copyAsList
 import top.e404.media.module.common.util.log
 import top.e404.media.module.common.util.query
+import top.e404.media.module.common.util.updateBy
 import java.security.MessageDigest
 import java.time.Duration
 
@@ -85,7 +84,7 @@ class AuthServiceImpl : AuthService {
             eq(UserDo::deleted, false)
         }) ?: run {
             log.warn("没有对应的用户: {}", dto.username)
-            throw WrongPasswordException()
+            fail(AuthFail.WRONG_PASSWORD)
         }
         val userId = user.id!!
         // 检查密码
@@ -93,11 +92,11 @@ class AuthServiceImpl : AuthService {
         // 密码错误
         if (!result.verified) {
             log.warn("密码错误: {}", dto)
-            throw WrongPasswordException()
+            fail(AuthFail.WRONG_PASSWORD)
         }
         val token = userTokenService.generateToken(user)
-        val perms = userService.getPermById(userId)
-        val roles = userService.getRoleById(userId).copyAsList(RoleVo::class)
+        val perms = userService.getUserPerms(userId)
+        val roles = userService.getUserRoles(userId).copyAsList(RoleVo::class)
 
         // 现有token
         return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
@@ -106,7 +105,7 @@ class AuthServiceImpl : AuthService {
     @Transactional(rollbackFor = [Exception::class])
     override fun register(dto: RegisterDto): LoginVo {
         val (type, value, username, password) = dto
-        if (!passwordRegex.matches(password)) throw SimplePasswordException()
+        if (!passwordRegex.matches(password)) fail(AuthFail.SIMPLE_PASSWORD)
         val userDo = UserDo(
             name = username,
             password = BCrypt.withDefaults().hashToString(12, password.toCharArray()),
@@ -116,8 +115,8 @@ class AuthServiceImpl : AuthService {
         val userId = userDo.id!!
         userBindService.save(UserBindDo(userId = userId, type = type, value = value, checked = false))
         val token = userTokenService.generateToken(userDo)
-        val perms = userService.getPermById(userId)
-        val roles = userService.getRoleById(userId).copyAsList(RoleVo::class)
+        val perms = userService.getUserPerms(userId)
+        val roles = userService.getUserRoles(userId).copyAsList(RoleVo::class)
         return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
     }
 
@@ -156,30 +155,29 @@ class AuthServiceImpl : AuthService {
         // 校验token
         val forgetPasswordDo = forgetPasswordService.getOne(query {
             eq(ForgetPasswordDo::token, token)
-        }) ?: throw HttpRequestException("invalid token")
-        if (!forgetPasswordDo.valid!!) throw HttpRequestException("invalid token")
+        }) ?: fail(AuthFail.INVALID_TOKEN)
+        if (!forgetPasswordDo.valid!!) fail(AuthFail.INVALID_TOKEN)
         // 已过有效期
         if (forgetPasswordDo.createTime!! + forgetDuration.toMillis() < System.currentTimeMillis()) {
             // 异步修改token过期
             executor.execute {
-                forgetPasswordService.update(
-                    LambdaUpdateWrapper<ForgetPasswordDo>()
-                        .eq(ForgetPasswordDo::token, token)
-                        .set(ForgetPasswordDo::valid, false)
-                )
+                forgetPasswordService.updateBy {
+                    eq(ForgetPasswordDo::token, token)
+                    set(ForgetPasswordDo::valid, false)
+                }
             }
-            throw HttpRequestException("token expired")
+            fail(AuthFail.INVALID_TOKEN)
         }
         // 校验密码
-        if (!passwordRegex.matches(password)) throw SimplePasswordException()
+        if (!passwordRegex.matches(password)) fail(AuthFail.SIMPLE_PASSWORD)
         // 更新密码
-        userService.update(
-            LambdaUpdateWrapper<UserDo>()
-                .set(
-                    UserDo::password,
-                    BCrypt.withDefaults().hashToChar(12, password.toCharArray())
-                )
-        )
+        userService.updateBy {
+            eq(UserDo::id, forgetPasswordDo.userId)
+            set(
+                UserDo::password,
+                BCrypt.withDefaults().hashToChar(12, password.toCharArray())
+            )
+        }
     }
 
     override fun setPassword(dto: SetPasswordDto) {
@@ -187,16 +185,16 @@ class AuthServiceImpl : AuthService {
         // 检查密码
         val result = BCrypt.verifyer().verify(old.toCharArray(), currentUser!!.user.password)
         // 密码错误
-        if (!result.verified) throw WrongPasswordException()
+        if (!result.verified) fail(AuthFail.WRONG_PASSWORD)
         // 校验密码
-        if (!passwordRegex.matches(new)) throw SimplePasswordException()
+        if (!passwordRegex.matches(new)) fail(AuthFail.WRONG_PASSWORD)
         // 更新密码
-        userService.update(
-            LambdaUpdateWrapper<UserDo>()
-                .set(
-                    UserDo::password,
-                    BCrypt.withDefaults().hashToChar(12, new.toCharArray())
-                )
-        )
+        userService.updateBy {
+            eq(UserDo::id, currentUser!!.user.id)
+            set(
+                UserDo::password,
+                BCrypt.withDefaults().hashToChar(12, new.toCharArray())
+            )
+        }
     }
 }

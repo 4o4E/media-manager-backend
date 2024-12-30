@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import top.e404.media.module.common.annontation.RequirePerm
-import top.e404.media.module.common.entity.auth.RoleDo
-import top.e404.media.module.common.entity.auth.RolePermDo
+import top.e404.media.module.common.entity.database.RoleDo
 import top.e404.media.module.common.enums.PermVo
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.common.enums.toVo
+import top.e404.media.module.common.exception.CommonFail
+import top.e404.media.module.common.exception.fail
 import top.e404.media.module.common.mapper.RoleMapper
-import top.e404.media.module.common.util.query
 
 interface RoleService : IService<RoleDo> {
     /**
@@ -25,7 +25,7 @@ interface RoleService : IService<RoleDo> {
     /**
      * 通过用户id查询其权限
      */
-    fun getPermByRoleId(id: Long): List<String>
+    fun getRolePerms(roleId: Long): List<String>
 
     /**
      * 删除角色, 同时删除给角色分配的权限
@@ -40,9 +40,6 @@ interface RoleService : IService<RoleDo> {
 
 @Service
 class RoleServiceImpl : RoleService, ServiceImpl<RoleMapper, RoleDo>() {
-    @set:Autowired
-    lateinit var rolePermService: RolePermService
-
     @set:Autowired
     lateinit var applicationContext: WebApplicationContext
 
@@ -59,13 +56,12 @@ class RoleServiceImpl : RoleService, ServiceImpl<RoleMapper, RoleDo>() {
         return baseMapper.getByUserId(userId)
     }
 
-    override fun getPermByRoleId(id: Long): List<String> {
-        return baseMapper.getPermByRoleId(id)
+    override fun getRolePerms(roleId: Long): List<String> {
+        return getById(roleId)?.perms ?: fail(CommonFail.NOT_FOUND, "角色")
     }
 
     @Transactional
     override fun remove(id: Long): Boolean {
-        rolePermService.remove(query { eq(RolePermDo::role, id) })
         return removeById(id)
     }
 

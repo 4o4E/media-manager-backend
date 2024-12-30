@@ -14,17 +14,17 @@ spring:
         queue-capacity: 128
       thread-name-prefix: worker-
   datasource:
-    driver-class-name: net.sf.log4jdbc.DriverSpy
-    username: root
+    driver-class-name: org.postgresql.Driver
+    username: postgres
     password: 123456
-    url: jdbc:log4jdbc:mysql://localhost:3306/media
+    url: jdbc:postgresql://localhost:5432/media
   codec:
     max-in-memory-size: 100MB
   mail:
     host: smtp.163.com
 #    port: 465
-    username: ""
-    password: ""
+    username: 18906733062@163.com
+    password: "FCMWNKRZFHELUGCK"
     default-encoding: UTF-8
     protocol: smtp
     properties:
@@ -39,6 +39,16 @@ spring:
             class: javax.net.ssl.SSLSocketFactory
           starttls:
             enable: true
+log4jdbc:
+  drivers: org.postgresql.Driver
+  auto:
+    load:
+      popular:
+        drivers: false
+  dump:
+    sql:
+      maxlinelength: 0
+
 application:
   base-url: "http://127.0.0.1"
   auth:

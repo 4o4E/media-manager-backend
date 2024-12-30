@@ -5,14 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
-import top.e404.media.module.common.entity.auth.RoleDo
-import top.e404.media.module.common.entity.auth.RolePermDo
-import top.e404.media.module.common.entity.auth.UserDo
-import top.e404.media.module.common.entity.auth.UserRoleDo
+import top.e404.media.module.common.entity.database.RoleDo
+import top.e404.media.module.common.entity.database.UserDo
 import top.e404.media.module.common.enums.SysPerm
-import top.e404.media.module.common.service.database.RolePermService
 import top.e404.media.module.common.service.database.RoleService
-import top.e404.media.module.common.service.database.UserRoleService
 import top.e404.media.module.common.service.database.UserService
 import top.e404.media.module.common.util.log
 import java.io.File
@@ -36,42 +32,47 @@ class InitRunner : ApplicationRunner {
     lateinit var userService: UserService
 
     @set:Autowired
-    lateinit var userRoleService: UserRoleService
-
-    @set:Autowired
     lateinit var roleService: RoleService
-
-    @set:Autowired
-    lateinit var rolePermService: RolePermService
 
     override fun run(args: ApplicationArguments) {
         if (File(INIT_FILE_NAME).exists()) return
         inInitialize = true
         log.info("开始初始化")
         val userId = 1L
+        val adminRoleId = 1L
+        val defaultRoleId = 2L
         userService.save(
             UserDo(
                 id = userId,
                 name = "admin",
                 password = BCrypt.withDefaults().hashToString(12, "123456".toCharArray()),
-                point = 0
+                point = 0,
+                roles = listOf(adminRoleId)
             )
         )
         log.info("初始化数据, 新建管理员用户admin, 密码123456")
 
-        val adminRoleId = 1L
-        val defaultRoleId = 2L
-
         val perms = SysPerm.entries
-        roleService.save(RoleDo(id = adminRoleId, name = "admin", description = "超级管理员角色, 默认拥有所有权限"))
-        rolePermService.saveBatch(perms.map { perm -> RolePermDo(adminRoleId, perm.perm) })
+        roleService.save(
+            RoleDo(
+                id = adminRoleId,
+                name = "admin",
+                remark = "超级管理员角色, 默认拥有所有权限",
+                perms = perms.map { it.perm }
+            )
+        )
         log.info("设置超级管理员角色拥有所有权限: ${perms.joinToString(",", "[", "]") { it.perm }}")
-        userRoleService.save(UserRoleDo(userId = userId, roleId = adminRoleId))
 
-        roleService.save(RoleDo(id = defaultRoleId, name = "default", description = "默认用户角色"))
         val userPerms = perms.filter { it.default }
+        roleService.save(
+            RoleDo(
+                id = defaultRoleId,
+                name = "default",
+                remark = "默认用户角色",
+                perms = userPerms.map { it.perm }
+            )
+        )
         log.info("设置默认用户角色拥有权限: ${userPerms.joinToString(",", "[", "]") { it.perm }}")
-        rolePermService.saveBatch(userPerms.map { perm -> RolePermDo(defaultRoleId, perm.perm) })
 
         val now = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
         File(INIT_FILE_NAME).writeText("初始化于$now")

@@ -40,6 +40,7 @@
     <logger level="off" name="jdbc.audit"/>
     <logger level="off" name="jdbc.sqltiming"/>
     <logger level="off" name="jdbc.resultset"/>
+    <logger level="off" name="jdbc.resultsettable"/>
     <logger level="off" name="jdbc.connection"/>
     <logger level="off" name="com.mysql.jdbc.Driver"/>
     <logger level="off" name="com.baomidou.mybatisplus.core.injector.DefaultSqlInjector"/>

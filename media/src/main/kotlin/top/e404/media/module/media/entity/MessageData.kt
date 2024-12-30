@@ -21,7 +21,7 @@ data class MessageData(
     @Schema(description = "最近更新时间")
     val updated: Long,
     @Schema(description = "消息类型")
-    val type: MessageType,
+    val type: MediaType,
     @Schema(description = "审核状态")
     val approved: ApprovedState,
     @NotEmpty

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.e404.media.module.common.advice.LogAccess
-import top.e404.media.module.common.entity.auth.*
+import top.e404.media.module.common.entity.database.*
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.service.system.AuthService
 

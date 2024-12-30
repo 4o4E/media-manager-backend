@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
-import top.e404.media.module.common.entity.page.PageInfo
+import top.e404.media.module.common.entity.dto.page.PageInfo
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.media.entity.MessageDto

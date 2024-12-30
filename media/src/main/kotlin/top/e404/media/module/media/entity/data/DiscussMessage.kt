@@ -3,8 +3,7 @@ package top.e404.media.module.media.entity.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import top.e404.media.module.media.entity.MessageVisitor
-import top.e404.media.module.media.entity.data.AudioMessage.Companion
+import top.e404.media.module.media.entity.MediaElementVisitor
 
 /**
  * 聊天记录: 多个发言的集合
@@ -19,7 +18,7 @@ data class DiscussMessage(val content: List<SpeakMessage>) : Message {
     @Transient
     val type = IDENTIFY
 
-    override fun sign(visitor: MessageVisitor) {
+    override fun sign(visitor: MediaElementVisitor) {
         for (message in content) message.sign(visitor)
     }
 }

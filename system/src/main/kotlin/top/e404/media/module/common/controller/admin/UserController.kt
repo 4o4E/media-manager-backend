@@ -11,15 +11,23 @@ import top.e404.media.module.common.advice.LogAccess
 import top.e404.media.module.common.annontation.RequirePerm
 import top.e404.media.module.common.entity.BaseResp
 import top.e404.media.module.common.entity.UpdateValid
-import top.e404.media.module.common.entity.auth.*
-import top.e404.media.module.common.entity.page.PageInfo
+import top.e404.media.module.common.entity.database.RoleVo
+import top.e404.media.module.common.entity.database.UserDo
+import top.e404.media.module.common.entity.database.UserDto
+import top.e404.media.module.common.entity.database.UserVo
+import top.e404.media.module.common.entity.dto.page.PageInfo
+import top.e404.media.module.common.entity.dto.user.AddUserDto
+import top.e404.media.module.common.entity.dto.user.UpdatePasswordDto
 import top.e404.media.module.common.entity.toResp
-import top.e404.media.module.common.entity.user.AddUserDto
-import top.e404.media.module.common.entity.user.UpdatePasswordDto
 import top.e404.media.module.common.enums.SysPerm
-import top.e404.media.module.common.service.database.UserRoleService
+import top.e404.media.module.common.exception.CommonFail
+import top.e404.media.module.common.exception.fail
+import top.e404.media.module.common.exception.notFound
 import top.e404.media.module.common.service.database.UserService
-import top.e404.media.module.common.util.*
+import top.e404.media.module.common.util.copyAs
+import top.e404.media.module.common.util.toMybatisPage
+import top.e404.media.module.common.util.toPageResult
+import top.e404.media.module.common.util.update
 
 @Validated
 @RestController
@@ -28,9 +36,6 @@ import top.e404.media.module.common.util.*
 class UserController {
     @set:Autowired
     lateinit var userService: UserService
-
-    @set:Autowired
-    lateinit var userRoleService: UserRoleService
 
     @LogAccess
     @GetMapping("")
@@ -50,7 +55,7 @@ class UserController {
     @GetMapping("/{id}/roles")
     @RequirePerm(SysPerm.USER_ROLE_VIEW)
     @Operation(summary = "通过id获取用户角色信息")
-    fun getRoleById(@PathVariable id: Long) = userService.getRoleById(id).map { it.copyAs(RoleVo::class) }.toResp()
+    fun getRoleById(@PathVariable id: Long) = userService.getUserRoles(id).map { it.copyAs(RoleVo::class) }.toResp()
 
     @LogAccess
     @PostMapping("/{userId}/roles/{roleId}")
@@ -60,7 +65,11 @@ class UserController {
         @PathVariable userId: Long,
         @PathVariable roleId: Long
     ) {
-        if (!userRoleService.save(UserRoleDo(userId, roleId))) error("该角色与用户已有分配")
+        val success = userService.update(null, update {
+            eq(UserDo::id, userId)
+            setSql("roles = IF(array_position(roles, {0}) IS NULL, array_append(roles, {1}), roles)", userId, userId)
+        })
+        if (!success) notFound("用户")
     }
 
     @LogAccess
@@ -71,18 +80,19 @@ class UserController {
         @PathVariable userId: Long,
         @PathVariable roleId: Long
     ) {
-        if (userId == 1L) error("不可删除")
-        userRoleService.remove(query {
-            eq(UserRoleDo::userId, userId)
-            eq(UserRoleDo::roleId, roleId)
+        if (userId == 1L && roleId == 1L) fail(CommonFail.BAD_OPERATOR, "不可解除该用户和角色的绑定")
+        val success = userService.update(null, update {
+            eq(UserDo::id, userId)
+            setSql("roles = array_remove(roles, {0})", userId)
         })
+        if (!success) notFound("用户")
     }
 
     @LogAccess
     @GetMapping("/{id}/perms")
     @RequirePerm(SysPerm.USER_ROLE_VIEW, SysPerm.ROLE_PERM_VIEW)
     @Operation(summary = "通过id获取用户权限信息")
-    fun getPermById(@PathVariable id: Long) = userService.getPermById(id).map { it.copyAs(RolePermVo::class) }.toResp()
+    fun getPermById(@PathVariable id: Long) = userService.getUserPerms(id).toResp()
 
     @LogAccess
     @PostMapping("")
@@ -100,10 +110,7 @@ class UserController {
     @Operation(summary = "删除用户")
     @Transactional
     fun remove(@PathVariable id: Long) {
-        if (id == 1L) error("该用户不可删除")
-        userRoleService.remove(query {
-            eq(UserRoleDo::userId, id)
-        })
+        if (id == 1L) fail(CommonFail.BAD_OPERATOR, "该用户不可删除")
         userService.removeById(id).toResp()
     }
 
