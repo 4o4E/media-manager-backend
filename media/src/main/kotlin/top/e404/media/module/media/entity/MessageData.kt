@@ -23,7 +23,7 @@ data class MessageData(
     @Schema(description = "消息类型")
     val type: MediaType,
     @Schema(description = "审核状态")
-    val approved: ApprovedState,
+    val approved: AuditState,
     @NotEmpty
     @Schema(description = "tag")
     val tags: MutableSet<Long>,

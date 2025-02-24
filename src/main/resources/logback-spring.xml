@@ -42,7 +42,6 @@
     <logger level="off" name="jdbc.resultset"/>
     <logger level="off" name="jdbc.resultsettable"/>
     <logger level="off" name="jdbc.connection"/>
-    <logger level="off" name="com.mysql.jdbc.Driver"/>
     <logger level="off" name="com.baomidou.mybatisplus.core.injector.DefaultSqlInjector"/>
 
     <logger level="warn" name="org.mongodb"/>

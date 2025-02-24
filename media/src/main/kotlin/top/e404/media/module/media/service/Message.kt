@@ -148,7 +148,7 @@ class MessageServiceImpl : MessageService {
             System.currentTimeMillis(),
             System.currentTimeMillis(),
             MediaType.byMessage(chain),
-            if (currentUser!!.perms.contains(SysPerm.MESSAGE_SKIP_APPROVAL.perm)) ApprovedState.PASS else ApprovedState.WAIT,
+            if (currentUser!!.perms.contains(SysPerm.MESSAGE_SKIP_APPROVAL.perm)) AuditState.PASS else AuditState.WAIT,
             tags,
             chain
         )
@@ -189,7 +189,7 @@ class MessageServiceImpl : MessageService {
             stamp,
             stamp,
             MediaType.byMessage(chain),
-            ApprovedState.PASS,
+            AuditState.PASS,
             tags,
             chain,
         )

@@ -2,7 +2,7 @@ package top.e404.media.module.media.entity
 
 import com.baomidou.mybatisplus.annotation.*
 import kotlinx.serialization.Serializable
-import top.e404.media.module.common.entity.`do`.AuditState
+import top.e404.media.module.common.entity.database.AuditState
 import top.e404.media.module.common.entity.typeHandler.TextListTypeHandler
 
 @Serializable
