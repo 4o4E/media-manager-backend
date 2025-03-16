@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 import top.e404.media.module.common.entity.typeHandler.VarcharListTypeHandler
 
 @Serializable
-@TableName("sys_role")
+@TableName("sys_role", autoResultMap = true)
 data class RoleDo(
-    @field:TableId(type = IdType.AUTO)
+    @field:TableId(type = IdType.ASSIGN_ID)
     var id: Long? = null,
     var name: String? = null,
     var remark: String? = null,

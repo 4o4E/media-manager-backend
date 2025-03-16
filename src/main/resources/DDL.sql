@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS sys_user
 (
     id          BIGSERIAL          NOT NULL PRIMARY KEY,
     name        VARCHAR(16) UNIQUE NOT NULL,
-    password    CHAR(64)           NOT NULL,
+    password    CHAR(60)           NOT NULL,
     point       INT DEFAULT 0      NOT NULL,
     roles       BIGINT[]           NOT NULL,
 
@@ -36,14 +36,11 @@ COMMENT ON COLUMN sys_user.name IS '用户名';
 COMMENT ON COLUMN sys_user.password IS '密码';
 COMMENT ON COLUMN sys_user.point IS '用户点数';
 
-CREATE TYPE BIND_TYPE AS ENUM ('PHONE', 'EMAIL');
-COMMENT ON TYPE BIND_TYPE IS '绑定类型';
-
 CREATE TABLE IF NOT EXISTS sys_user_bind
 (
     id          BIGSERIAL    NOT NULL PRIMARY KEY,
     user_id     BIGINT       NOT NULL REFERENCES sys_user (id),
-    type        BIND_TYPE    NOT NULL,
+    type        INT          NOT NULL,
     value       VARCHAR(128) NOT NULL,
     checked     BOOLEAN      NOT NULL,
 
@@ -109,18 +106,17 @@ COMMENT ON TABLE media_tag IS '系统权限';
 COMMENT ON COLUMN media_tag.names IS '创建标签时指定的名字,';
 COMMENT ON COLUMN media_tag.remark IS '备注';
 
-CREATE TYPE AUDIT_STATE AS ENUM ('WAIT', 'PASS', 'REJECT');
-CREATE TYPE MEDIA_TYPE AS ENUM ('COMPLEX', 'IMAGE', 'VIDEO', 'AUDIO', 'TEXT');
-
 CREATE TABLE IF NOT EXISTS media_content
 (
     id          BIGSERIAL   NOT NULL PRIMARY KEY,
-    audit_state AUDIT_STATE NOT NULL,
-    type        MEDIA_TYPE  NOT NULL,
+    audit_state INT         NOT NULL,
+    type        INT         NOT NULL,
     title       VARCHAR(64) NOT NULL,
     tags        BIGINT[]    NOT NULL,
-    content     JSON        NOT NULL,
+    content     TEXT        NOT NULL,
+    sign        CHAR(64)    NOT NULL UNIQUE,
 
+    deleted     BOOLEAN     NOT NULL,
     version     BIGINT      NOT NULL,
     create_by   BIGINT      NOT NULL,
     create_time BIGINT      NOT NULL,
@@ -133,3 +129,25 @@ COMMENT ON COLUMN media_content.type IS '媒体类型';
 COMMENT ON COLUMN media_content.title IS '标题';
 COMMENT ON COLUMN media_content.tags IS '标签';
 COMMENT ON COLUMN media_content.content IS '内容';
+COMMENT ON COLUMN media_content.sign IS '内容签名, 防止重复';
+
+CREATE TABLE IF NOT EXISTS sys_dict
+(
+    id          BIGSERIAL   NOT NULL PRIMARY KEY,
+    type        VARCHAR(16) NOT NULL,
+    value       VARCHAR(16) NOT NULL,
+    label       VARCHAR(64) NOT NULL,
+    enabled     BOOLEAN     NOT NULL,
+
+    version     BIGINT      NOT NULL,
+    create_by   BIGINT      NOT NULL,
+    create_time BIGINT      NOT NULL,
+    update_by   BIGINT      NOT NULL,
+    update_time BIGINT      NOT NULL,
+    UNIQUE (type, value)
+);
+COMMENT ON TABLE sys_dict IS '字典信息';
+COMMENT ON COLUMN sys_dict.type IS '字典类型';
+COMMENT ON COLUMN sys_dict.value IS '字典编码';
+COMMENT ON COLUMN sys_dict.label IS '字典标签';
+COMMENT ON COLUMN sys_dict.enabled IS '是否启用';

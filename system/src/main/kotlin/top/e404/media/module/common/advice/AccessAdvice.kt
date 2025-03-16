@@ -1,11 +1,12 @@
 package top.e404.media.module.common.advice
 
+import kotlinx.serialization.Serializable
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.Resource
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -16,6 +17,7 @@ import top.e404.media.module.common.util.traceId
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.io.Serializable as JavaSerializable
 
 /**
  * 用于在请求中获取该用户的信息
@@ -38,19 +40,23 @@ class AccessAdvice {
         val attributes = RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes
         attributes.response!!.addHeader(TRACE_ID_KEY, traceId)
         val request = attributes.request
-        val signature = joinPoint.signature.toLongString()
-        log.debug("signature: {}", signature)
-        log.debug("requestURL: {} {}", request.method, request.requestURL)
-        log.debug("remoteAddr: {}", request.remoteAddr)
-        log.debug("requestArgs: {}", request.parameterMap.toJsonString())
-        log.debug(
-            "requestBody: {}",
-            if (request.contentType == MediaType.APPLICATION_JSON.toString()) {
-                request.inputStream.bufferedReader().use { it.readText() }
-            } else {
-                "unsupported content type: ${request.contentType}"
-            }
-        )
+        val signature = joinPoint.signature as MethodSignature
+        log.debug("method: {}.{}", signature.method.declaringClass.name, signature.method.name)
+        log.debug("url: {} {}", request.method, request.requestURL)
+        log.debug("addr: {}", request.remoteAddr)
+        if (log.isDebugEnabled) {
+            log.debug(buildString {
+                append("args: [")
+                for ((index, parameter) in signature.method.parameters.withIndex()) {
+                    if (index > 0) append(", ")
+                    append(parameter.name)
+                        .append(": ")
+                        .append(joinPoint.args[index]?.let { if (it is Serializable || it is JavaSerializable) it.toJsonString() else it.javaClass.name }
+                            ?: "null")
+                }
+                append("]")
+            })
+        }
         val start = Instant.now()
         try {
             val resp = joinPoint.proceed()

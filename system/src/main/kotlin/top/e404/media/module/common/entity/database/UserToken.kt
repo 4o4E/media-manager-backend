@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.annotation.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-@TableName("sys_user_token")
+@TableName("sys_user_token", autoResultMap = true)
 data class UserTokenDo(
-    @field:TableId(type = IdType.AUTO)
+    @field:TableId(type = IdType.ASSIGN_ID)
     var id: Long? = null,
     var userId: Long? = null,
     var token: String? = null,

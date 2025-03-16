@@ -14,7 +14,7 @@ import top.e404.media.module.common.service.database.ForgetPasswordService
 import top.e404.media.module.common.service.database.UserBindService
 import top.e404.media.module.common.service.database.UserService
 import top.e404.media.module.common.service.database.UserTokenService
-import top.e404.media.module.common.util.copyAsList
+import top.e404.media.module.common.util.convertList
 import top.e404.media.module.common.util.log
 import top.e404.media.module.common.util.query
 import top.e404.media.module.common.util.updateBy
@@ -88,7 +88,13 @@ class AuthServiceImpl : AuthService {
         }
         val userId = user.id!!
         // 检查密码
+        val hash = BCrypt.withDefaults().hashToString(12, dto.password.toCharArray())
+        println(hash)
+        println(BCrypt.verifyer().verify(dto.password.toCharArray(), hash))
+        println("dto.password: ${dto.password}")
+        println("user.password: ${user.password}")
         val result = BCrypt.verifyer().verify(dto.password.toCharArray(), user.password!!)
+        println(result)
         // 密码错误
         if (!result.verified) {
             log.warn("密码错误: {}", dto)
@@ -96,7 +102,7 @@ class AuthServiceImpl : AuthService {
         }
         val token = userTokenService.generateToken(user)
         val perms = userService.getUserPerms(userId)
-        val roles = userService.getUserRoles(userId).copyAsList(RoleVo::class)
+        val roles = userService.getUserRoles(userId).convertList(RoleVo::class)
 
         // 现有token
         return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
@@ -116,7 +122,7 @@ class AuthServiceImpl : AuthService {
         userBindService.save(UserBindDo(userId = userId, type = type, value = value, checked = false))
         val token = userTokenService.generateToken(userDo)
         val perms = userService.getUserPerms(userId)
-        val roles = userService.getUserRoles(userId).copyAsList(RoleVo::class)
+        val roles = userService.getUserRoles(userId).convertList(RoleVo::class)
         return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
     }
 
@@ -197,4 +203,9 @@ class AuthServiceImpl : AuthService {
             )
         }
     }
+}
+
+fun main() {
+    // println(BCrypt.withDefaults().hashToString(12, "123456".toCharArray()))
+    println(BCrypt.verifyer().verify("123456".toCharArray(), "\$2a\$12\$aOEBtXijo57ZVu7mo61tZepKB99MQl3ROO5r4aRiCPyMmiEltyW2u"))
 }

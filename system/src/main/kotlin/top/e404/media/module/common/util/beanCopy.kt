@@ -1,5 +1,7 @@
 package top.e404.media.module.common.util
 
+import com.baomidou.mybatisplus.core.metadata.IPage
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.memberProperties
@@ -8,21 +10,21 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * 复制bean实体到另一个实体, 复制其中同名的property, 遇到非空必须参数未提供时抛出[IllegalArgumentException]
  */
-inline fun <reified T : Any, reified R : Any> T.copyAs(
+inline fun <reified T : Any, reified R : Any> T.convert(
     to: KClass<R>,
     vararg cover: Pair<String, Any?>
-) = copyAsImpl(T::class, to, true, *cover)!!
+) = convertImpl(T::class, to, true, *cover)!!
 
 /**
  * 复制bean实体到另一个实体, 复制其中同名的property, 遇到非空必须参数未提供时返回null
  */
-inline fun <reified T : Any, reified R : Any> T.copyAsOrNull(
+inline fun <reified T : Any, reified R : Any> T.convertOrNull(
     to: KClass<R>,
     vararg cover: Pair<String, Any?>
-) = copyAsImpl(T::class, to, false, *cover)
+) = convertImpl(T::class, to, false, *cover)
 
 @PublishedApi
-internal fun <T : Any, R : Any> T.copyAsImpl(
+internal fun <T : Any, R : Any> T.convertImpl(
     from: KClass<T>,
     to: KClass<R>,
     throwOnConflict: Boolean = false,
@@ -58,16 +60,23 @@ internal fun <T : Any, R : Any> T.copyAsImpl(
 }
 
 /**
- * @see copyAs
+ * @see convert
  */
-inline fun <reified T : Any, reified R : Any> Iterable<T>.copyAsList(
+inline fun <reified T : Any, reified R : Any> Iterable<T>.convertList(
     to: KClass<R>,
     vararg cover: Pair<String, Any?>
-) = copyAsListImpl(T::class, to, *cover)
+) = convertListImpl(T::class, to, *cover)
 
 @PublishedApi
-internal fun <T : Any, R : Any> Iterable<T>.copyAsListImpl(
+internal fun <T : Any, R : Any> Iterable<T>.convertListImpl(
     from: KClass<T>,
     to: KClass<R>,
     vararg cover: Pair<String, Any?>
-) = map { it.copyAsImpl(from, to, true, *cover)!! }
+) = map { it.convertImpl(from, to, true, *cover)!! }
+
+inline fun <From : Any, reified To : Any> IPage<From>.convert(
+    to: KClass<To>,
+    vararg cover: Pair<String, Any?>
+) = Page<To>(current, size, total).apply {
+    records = records.convertList(to, *cover)
+}

@@ -1,0 +1,48 @@
+### 获取所有权限
+GET {{base-url}}/api/admin/roles/allPerm
+Authorization: {{dev_token}}
+
+### 分页获取角色
+GET {{base-url}}/api/admin/roles
+Authorization: {{dev_token}}
+
+### 获取所有角色
+GET {{base-url}}/api/admin/roles/all
+Authorization: {{dev_token}}
+
+### 获取角色
+GET {{base-url}}/api/admin/roles/1
+Authorization: {{dev_token}}
+
+### 通过id为角色添加权限节点
+POST {{base-url}}/api/admin/roles/1/perms/test:test
+Authorization: {{dev_token}}
+
+### 通过id为角色移除权限节点
+DELETE {{base-url}}/api/admin/roles/1/perms/test:test
+Authorization: {{dev_token}}
+
+### 创建角色
+POST {{base-url}}/api/admin/roles
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "name": "test",
+  "remark": "test"
+}
+
+### 删除角色
+DELETE {{base-url}}/api/admin/roles/5
+Authorization: {{dev_token}}
+
+### 更新角色数据
+PATCH {{base-url}}/api/admin/roles
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "id": 5,
+  "name": "test2",
+  "remark": "test2"
+}

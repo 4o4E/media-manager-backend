@@ -1,0 +1,61 @@
+### 获取所有用户
+GET {{base-url}}/api/admin/users
+Authorization: {{dev_token}}
+
+### 获取用户
+GET {{base-url}}/api/admin/users/1
+Authorization: {{dev_token}}
+
+### 获取用户角色
+GET {{base-url}}/api/admin/users/1/roles
+Authorization: {{dev_token}}
+
+### 添加用户角色
+POST {{base-url}}/api/admin/users/1/roles/2
+Authorization: {{dev_token}}
+
+### 删除用户角色
+DELETE {{base-url}}/api/admin/users/1/roles/2
+Authorization: {{dev_token}}
+
+### 获取用户权限
+GET {{base-url}}/api/admin/users/1/perms
+Authorization: {{dev_token}}
+
+### 创建用户
+POST {{base-url}}/api/admin/users
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+    "name": "test7",
+    "password": "test",
+    "point": 0
+}
+
+### 删除用户
+DELETE {{base-url}}/api/admin/users/4
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+### 更新用户
+PATCH {{base-url}}/api/admin/users
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "name": "test1",
+  "point": 0
+}
+
+### 更新用户密码
+POST {{base-url}}/api/admin/users/password
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "password": "123456"
+}
+

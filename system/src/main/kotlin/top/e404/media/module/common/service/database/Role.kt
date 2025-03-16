@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
-import top.e404.media.module.common.annontation.RequirePerm
+import top.e404.media.module.common.annotation.RequirePerm
 import top.e404.media.module.common.entity.database.RoleDo
 import top.e404.media.module.common.enums.PermVo
 import top.e404.media.module.common.enums.SysPerm

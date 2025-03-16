@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import top.e404.media.module.common.annontation.RequirePerm
+import top.e404.media.module.common.annotation.RequirePerm
 import top.e404.media.module.common.exception.AuthFail
 import top.e404.media.module.common.exception.fail
 import top.e404.media.module.common.util.log

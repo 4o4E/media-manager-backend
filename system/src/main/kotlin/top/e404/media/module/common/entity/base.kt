@@ -1,5 +1,8 @@
 package top.e404.media.module.common.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BaseResp<T : Any>(
     val code: Int,
     val success: Boolean,

@@ -1,0 +1,47 @@
+### 查询媒体信息
+POST {{base-url}}/api/media/query
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "queryMode": 0,
+  "tags": [1898676960998350849],
+  "count": 10,
+  "type": "IMAGE"
+}
+
+### 随机获取message
+GET {{base-url}}/api/media/random?count=10
+Authorization: {{dev_token}}
+
+
+### 上传media content
+POST {{base-url}}/api/media
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "type": "IMAGE",
+  "title": "untitled",
+  "content": [
+    {
+      "id": "a5c05063ddd00cb12fc3b5f7c04ca1eea0c4ca6eea19580b6f2bbadc37f36363",
+      "format": "gif",
+      "file": false,
+      "width": 360,
+      "height": 202,
+      "type": "image"
+    },
+    {
+      "id": "a5c05063ddd00cb12fc3b5f7c04ca1eea0c4ca6eea19580b6f2bbadc37f36363",
+      "format": "gif",
+      "file": false,
+      "width": 360,
+      "height": 202,
+      "type": "image"
+    }
+  ],
+  "tags": [
+    1898676960998350849
+  ]
+}

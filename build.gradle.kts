@@ -1,3 +1,5 @@
+import org.gradle.model.internal.core.ModelNodes.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -10,6 +12,7 @@ plugins {
 }
 
 allprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     group = "top.e404"
     version = "1.0.0"
 
@@ -17,17 +20,21 @@ allprojects {
         mavenCentral()
     }
 
-    tasks {
-        withType<KotlinCompile> {
-            kotlinOptions.jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
     implementation(project(":system"))
-    // implementation(project(":media"))
-    implementation("ru.vasiand:spring-boot-starter-log4jdbc:1.1.0")
+    implementation(project(":media"))
+    implementation("ru.vasiand:spring-boot-starter-log4jdbc:1.2.0")
 }
 
 idea {

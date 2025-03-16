@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.e404.media.module.media.mapper.MediaContentMapper">
+
+    <resultMap id="MediaResultMap" type="top.e404.media.module.media.entity.MediaContentDo">
+        <result property="tags" column="tags" jdbcType="ARRAY"
+                typeHandler="top.e404.media.module.common.entity.typeHandler.LongListTypeHandler"/>
+        <!--        <result property="books" column="books" jdbcType="ARRAY" typeHandler="org.apache.ibatis.type.ArrayTypeHandler"/>-->
+        <!--这里使用resultMap会识别到，注意这里说的是mybatis/>-->
+        <result property="content" column="content" jdbcType="JAVA_OBJECT"
+                typeHandler="top.e404.media.module.media.typeHandler.MediaContentTypeHandler"/>
+    </resultMap>
+
+    <select id="random" resultMap="MediaResultMap">
+        SELECT *
+        FROM media_content t
+        ORDER BY random()
+        LIMIT #{count}
+    </select>
+
+    <select id="page" resultMap="MediaResultMap">
+        SELECT *
+        FROM media_content t
+        WHERE true
+        <if test="dto.type != null">
+            AND t.type = #{dto.type}
+        </if>
+        <if test="dto.tags.size() > 0">
+            <if test="dto.queryMode.name == 'ALL'">
+                AND t.tags @> Array[<foreach collection="dto.tags" item="tag" separator=", ">#{tag}</foreach>]
+            </if>
+            <if test="dto.queryMode.name == 'ANY'">
+                AND t.tags &amp;&amp; Array[<foreach collection="dto.tags" item="tag" separator=", ">#{tag}</foreach>]
+            </if>
+        </if>
+    </select>
+
+    <select id="query" resultMap="MediaResultMap">
+        SELECT *
+        FROM media_content t
+        WHERE true
+        <if test="dto.type != null">
+            AND t.type = #{dto.type}
+        </if>
+        <if test="dto.queryMode.name == 'ALL'">
+            AND t.tags @> Array[<foreach collection="dto.tags" item="tag" separator=", ">#{tag}</foreach>]
+        </if>
+        <if test="dto.queryMode.name == 'ANY'">
+            AND t.tags &amp;&amp; Array[<foreach collection="dto.tags" item="tag" separator=", ">#{tag}</foreach>]
+        </if>
+        ORDER BY random()
+        LIMIT #{dto.count}
+    </select>
+</mapper>

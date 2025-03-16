@@ -5,14 +5,15 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletResponse
+import org.apache.ibatis.javassist.NotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import top.e404.media.module.common.advice.LogAccess
-import top.e404.media.module.common.annontation.RequirePerm
+import top.e404.media.module.common.annotation.RequirePerm
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
-import top.e404.media.module.common.exception.NotFoundException
+import top.e404.media.module.common.exception.notFound
 import top.e404.media.module.common.util.ContentType
 import top.e404.media.module.media.service.FileService
 
@@ -29,7 +30,7 @@ class FileController {
     fun getFileById(@PathVariable @Parameter(description = "文件id") id: String, resp: HttpServletResponse) {
         resp.contentType = ContentType[id.substringAfter(".")]
         val resource = (fileService.getFileResourceBySha(id.substringBefore("."))
-            ?: throw NotFoundException("文件不存在"))
+            ?: notFound("文件"))
         resource.inputStream.buffered().use { it.transferTo(resp.outputStream) }
     }
 

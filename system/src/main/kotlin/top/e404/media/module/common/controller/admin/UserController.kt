@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import top.e404.media.module.common.advice.LogAccess
-import top.e404.media.module.common.annontation.RequirePerm
+import top.e404.media.module.common.annotation.RequirePerm
 import top.e404.media.module.common.entity.BaseResp
 import top.e404.media.module.common.entity.UpdateValid
 import top.e404.media.module.common.entity.database.RoleVo
@@ -24,10 +24,7 @@ import top.e404.media.module.common.exception.CommonFail
 import top.e404.media.module.common.exception.fail
 import top.e404.media.module.common.exception.notFound
 import top.e404.media.module.common.service.database.UserService
-import top.e404.media.module.common.util.copyAs
-import top.e404.media.module.common.util.toMybatisPage
-import top.e404.media.module.common.util.toPageResult
-import top.e404.media.module.common.util.update
+import top.e404.media.module.common.util.*
 
 @Validated
 @RestController
@@ -41,21 +38,21 @@ class UserController {
     @GetMapping("")
     @RequirePerm(SysPerm.USER_VIEW)
     @Operation(summary = "分页获取用户")
-    fun listUser(pageInfo: PageInfo) = userService.page(pageInfo.toMybatisPage()).toPageResult {
-        it.copyAs(UserVo::class)
+    fun page(pageInfo: PageInfo) = userService.page(pageInfo.toMybatisPage()).toPageResp {
+        it.convert(UserVo::class)
     }
 
     @LogAccess
     @GetMapping("/{id}")
     @RequirePerm(SysPerm.USER_VIEW)
     @Operation(summary = "通过id获取用户信息")
-    fun getUserById(@PathVariable id: Long) = userService.getById(id).copyAs(UserVo::class).toResp()
+    fun getUserById(@PathVariable id: Long) = userService.getById(id).convert(UserVo::class).toResp()
 
     @LogAccess
     @GetMapping("/{id}/roles")
     @RequirePerm(SysPerm.USER_ROLE_VIEW)
     @Operation(summary = "通过id获取用户角色信息")
-    fun getRoleById(@PathVariable id: Long) = userService.getUserRoles(id).map { it.copyAs(RoleVo::class) }.toResp()
+    fun getRoleById(@PathVariable id: Long) = userService.getUserRoles(id).map { it.convert(RoleVo::class) }.toResp()
 
     @LogAccess
     @PostMapping("/{userId}/roles/{roleId}")
@@ -65,10 +62,10 @@ class UserController {
         @PathVariable userId: Long,
         @PathVariable roleId: Long
     ) {
-        val success = userService.update(null, update {
+        val success = userService.updateBy {
             eq(UserDo::id, userId)
-            setSql("roles = IF(array_position(roles, {0}) IS NULL, array_append(roles, {1}), roles)", userId, userId)
-        })
+            setSql("roles = case when array_position(roles, {0}) IS NULL then array_append(roles, {1}) else roles end", roleId, roleId)
+        }
         if (!success) notFound("用户")
     }
 
@@ -83,7 +80,7 @@ class UserController {
         if (userId == 1L && roleId == 1L) fail(CommonFail.BAD_OPERATOR, "不可解除该用户和角色的绑定")
         val success = userService.update(null, update {
             eq(UserDo::id, userId)
-            setSql("roles = array_remove(roles, {0})", userId)
+            setSql("roles = array_remove(roles, {0})", roleId)
         })
         if (!success) notFound("用户")
     }
@@ -99,9 +96,11 @@ class UserController {
     @RequirePerm(SysPerm.USER_EDIT)
     @Operation(summary = "创建用户")
     fun save(@RequestBody @Validated dto: AddUserDto): BaseResp<UserVo> {
-        val userDo = dto.copyAs(UserDo::class)
+        val userDo = dto.convert(UserDo::class)
+        userDo.roles = listOf()
+        userDo.password = String(BCrypt.withDefaults().hashToChar(12, dto.password.toCharArray()))
         userService.save(userDo)
-        return userDo.copyAs(UserVo::class).toResp()
+        return userDo.convert(UserVo::class).toResp()
     }
 
     @LogAccess
@@ -119,9 +118,9 @@ class UserController {
     @RequirePerm(SysPerm.USER_EDIT)
     @Operation(summary = "更新用户数据")
     fun update(@RequestBody @Validated(UpdateValid::class) dto: UserDto): BaseResp<UserVo> {
-        val userDo = dto.copyAs(UserDo::class)
+        val userDo = dto.convert(UserDo::class)
         userService.updateById(userDo)
-        return userDo.copyAs(UserVo::class).toResp()
+        return userDo.convert(UserVo::class).toResp()
     }
 
     @LogAccess
@@ -131,7 +130,7 @@ class UserController {
     fun updatePassword(@RequestBody req: UpdatePasswordDto) {
         userService.update(update {
             eq(UserDo::id, req.id)
-            set(UserDo::password, String(BCrypt.withDefaults().hashToChar(12, req.password.toCharArray())))
+            set(UserDo::password, BCrypt.withDefaults().hashToString(12, req.password.toCharArray()))
         })
     }
 }

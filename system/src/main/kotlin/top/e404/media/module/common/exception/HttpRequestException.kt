@@ -33,6 +33,12 @@ fun fail(reason: FailReason, vararg params: Any?): Nothing {
 @HttpResponseMarker
 fun notFound(name: String): Nothing = fail(CommonFail.NOT_FOUND, name)
 
+@HttpResponseMarker
+fun notChanged(): Nothing = throw NoChangeException()
+
+@HttpResponseMarker
+fun exists(name: String): Nothing = fail(CommonFail.EXISTS, name)
+
 enum class AuthFail(override val code: Int, override val message: String) : FailReason {
     UNAUTHORIZED(1001, "未登录"),
     PERMISSION_DENIED(1002, "无权访问"),
@@ -51,4 +57,5 @@ enum class CommonFail(override val code: Int, override val message: String) : Fa
     NO_CHANGE(2002, "没有修改"),
     BAD_OPERATOR(2003, "不允许的操作: %s"),
     BAD_REQUEST(2004, "请求数据格式错误: %s"),
+    EXISTS(2005, "已有%s"),
 }

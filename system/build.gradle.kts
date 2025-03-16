@@ -35,7 +35,7 @@ dependencies {
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("io.projectreactor.kotlin:reactor-kotlin-extensions")
     api("org.jetbrains.kotlin:kotlin-reflect")
-    runtimeOnly("org.postgresql:postgresql:42.7.3")
+    implementation("org.postgresql:postgresql:42.7.5")
     // runtimeOnly("com.mysql:mysql-connector-j")
     // runtimeOnly("com.sun.mail:jakarta.mail:2.0.1")
 
@@ -45,8 +45,6 @@ dependencies {
     // bcrypt
     implementation("at.favre.lib:bcrypt:0.10.2")
 
-    // mongodb
-    implementation("org.mongodb:mongodb-driver-sync:4.9.1")
     // skiko
     api("org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.8.9")
     api("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.8.9")
@@ -64,5 +62,5 @@ kotlin {
 
 tasks.test {
     useJUnitPlatform()
-    workingDir = rootDir.resolve("run").also(File::mkdir)
+    workingDir = rootDir.resolve(".run").also(File::mkdir)
 }

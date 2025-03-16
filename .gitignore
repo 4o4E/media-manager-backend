@@ -3,8 +3,8 @@
 build
 gradle/wrapper/*
 !gradle/wrapper/gradle-wrapper.properties
+!.run/App.run.xml
 .run
-!.run/Application.run.xml
 
 .DS_Store
 **/.DS_Store

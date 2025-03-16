@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
@@ -39,6 +40,9 @@ class CurrentUserAdvice {
     @set:Autowired
     lateinit var tokenService: UserTokenService
 
+    @set:Value("\${dev.token}")
+    lateinit var devToken: String
+
     /**
      * 注入当前用户数据
      *
@@ -50,6 +54,21 @@ class CurrentUserAdvice {
         val request = requestAttributes!!.request
         val token = request.getHeader(HttpHeaders.AUTHORIZATION) ?: return joinPoint.proceed()
         log.debug("token: {}", token)
+
+        if (token == devToken) {
+            val userDo = userService.getById(1)
+            val roles = roleService.getRoleByUserId(1).toSet()
+            val perms = roleService.getRolePerms(1).toSet()
+            val tokenDo = UserTokenDo(1, 1, devToken, Long.MAX_VALUE)
+            val current = CurrentUser(userDo, tokenDo, roles, perms)
+            log.debug("注入debug current user: {}", current.toJsonString())
+            currentUsers.set(current)
+            try {
+                return joinPoint.proceed()
+            } finally {
+                currentUsers.remove()
+            }
+        }
 
         // 缓存
         currentUserCache[token]?.let { cache ->

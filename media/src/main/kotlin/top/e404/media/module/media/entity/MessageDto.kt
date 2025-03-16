@@ -2,13 +2,13 @@ package top.e404.media.module.media.entity
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
-import top.e404.media.module.media.entity.data.Message
+import top.e404.media.module.media.entity.data.MediaElement
 
 @Schema(description = "消息上传")
 @Serializable
 data class MessageDto(
     @Schema(description = "消息的具体数据")
-    val chain: MutableList<Message>,
+    val chain: MutableList<MediaElement>,
     @Schema(description = "该消息的tag")
     val tags: MutableSet<Long>
 )
@@ -18,7 +18,7 @@ data class MessageDto(
 data class MessageUpdateDto(
     val id: String,
     @Schema(description = "消息的具体数据")
-    val chain: MutableList<Message>,
+    val chain: MutableList<MediaElement>,
     @Schema(description = "该消息的tag")
     val tags: MutableSet<Long>
 )

@@ -41,4 +41,10 @@ fun <T : Any> IPage<T>.toPageResult() = PageResult<T, Void>(records ?: emptyList
  * 将分页查询的结果进行转换并转换为PageResult
  */
 inline fun <T : Any, R : Any> IPage<T>.toPageResult(map: (T) -> R) =
+    PageResult<R, Void>(records?.map(map) ?: emptyList(), total)
+
+/**
+ * 将分页查询的结果进行转换并转换为BaseResp<PageResult>
+ */
+inline fun <T : Any, R : Any> IPage<T>.toPageResp(map: (T) -> R) =
     PageResult<R, Void>(records?.map(map) ?: emptyList(), total).toResp()

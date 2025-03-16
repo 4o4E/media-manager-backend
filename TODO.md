@@ -3,4 +3,5 @@
 - [x] 评论
 - [x] log4jdbc
 - [x] tag id
+- [x] 搜索界面按搜索不清空已有数据
 - [x] message 删除修改

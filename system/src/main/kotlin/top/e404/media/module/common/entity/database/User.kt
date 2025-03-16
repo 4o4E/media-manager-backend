@@ -23,6 +23,9 @@ data class UserDto(
     @Schema(description = "用户点数")
     @Null(message = "创建时必须为空", groups = [SaveValid::class])
     var point: Int? = null,
+    @Schema(description = "用户角色")
+    @Null(message = "创建时必须为空", groups = [SaveValid::class])
+    var roles: List<Long>? = null,
 )
 
 @Schema(description = "用户")
@@ -32,13 +35,16 @@ data class UserVo(
     val id: Long?,
     @Schema(description = "用户名")
     val name: String?,
+    @Schema(description = "用户点数")
     var point: Int? = null,
+    @Schema(description = "用户角色")
+    var roles: List<Long> = emptyList(),
 )
 
 @Serializable
-@TableName("sys_user")
+@TableName("sys_user", autoResultMap = true)
 data class UserDo(
-    @field:TableId(type = IdType.AUTO)
+    @field:TableId(type = IdType.ASSIGN_ID)
     var id: Long? = null,
     var name: String? = null,
     var password: String? = null,

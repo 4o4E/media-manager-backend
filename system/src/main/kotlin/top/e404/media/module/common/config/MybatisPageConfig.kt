@@ -13,6 +13,6 @@ import org.springframework.context.annotation.Configuration
 class MybatisPageConfig {
     @get:Bean
     val mybatisPlusInterceptor = MybatisPlusInterceptor().apply {
-        addInnerInterceptor(PaginationInnerInterceptor(DbType.MYSQL))
+        addInnerInterceptor(PaginationInnerInterceptor(DbType.POSTGRE_SQL))
     }
 }

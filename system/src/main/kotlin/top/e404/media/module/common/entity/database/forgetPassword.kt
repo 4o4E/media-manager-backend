@@ -39,9 +39,9 @@ data class SetPasswordDto(
 )
 
 @Serializable
-@TableName("sys_user_forget_password")
+@TableName("sys_user_forget_password", autoResultMap = true)
 data class ForgetPasswordDo(
-    @field:TableId(type = IdType.AUTO)
+    @field:TableId(type = IdType.ASSIGN_ID)
     var id: Long? = null,
     var userId: Long? = null,
     var token: String? = null,

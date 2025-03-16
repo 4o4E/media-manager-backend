@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.e404.media.module.common.mapper.DictMapper">
+
+    <select id="listAll" resultType="top.e404.media.module.common.entity.database.DictCollection">
+        SELECT sd.type,
+               (SELECT json_agg(row_to_json(d))::text
+                FROM sys_dict d
+                WHERE d.type = sd.type) AS values
+        FROM sys_dict sd
+        WHERE true
+        <if test="extra.type != null">
+            AND sd.type LIKE CONCAT('%', #{type}, '%')
+        </if>
+        <if test="extra.value != null">
+            AND sd.value LIKE CONCAT('%', #{value}, '%')
+        </if>
+        <if test="extra.label != null">
+            AND sd.label LIKE CONCAT('%', #{label}, '%')
+        </if>
+        GROUP BY type
+
+    </select>
+</mapper>

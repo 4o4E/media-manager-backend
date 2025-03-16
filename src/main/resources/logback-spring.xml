@@ -4,9 +4,9 @@
     <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
 
     <property name="log.path" value="logs"/>
-    <property name="log.pattern.file" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %thread %logger{50} - %msg%n"/>
+    <property name="log.pattern.file" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %thread %X{traceId:---------------------------------} %logger{50} - %msg%n"/>
     <property name="log.pattern.console"
-              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %X{traceId} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %X{traceId:---------------------------------} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"

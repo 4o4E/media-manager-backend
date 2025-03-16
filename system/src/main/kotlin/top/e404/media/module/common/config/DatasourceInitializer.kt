@@ -13,7 +13,7 @@ import javax.sql.DataSource
  * 初始化数据库
  */
 @Configuration
-class CustomizeDataSourceInitializer {
+class DataInitializer {
     @Value("classpath:DDL.sql")
     lateinit var sqlScriptSchema: Resource
 
@@ -21,9 +21,7 @@ class CustomizeDataSourceInitializer {
     fun dataSourceInitializer(dataSource: DataSource) = DataSourceInitializer().apply {
         setDataSource(dataSource)
         if (!File(InitRunner.INIT_FILE_NAME).exists()) setDatabasePopulator(ResourceDatabasePopulator().apply {
-            addScript(
-                sqlScriptSchema
-            )
+            addScript(sqlScriptSchema)
         })
     }
 }

@@ -1,0 +1,32 @@
+### 获取所有字典
+GET {{base-url}}/api/admin/dict
+Authorization: {{dev_token}}
+
+### 新增字典条目
+POST {{base-url}}/api/admin/dict
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+    "type": "test",
+    "value": "4",
+    "label": "false",
+    "enabled": true
+}
+
+### 修改字典条目
+PATCH {{base-url}}/api/admin/dict
+Authorization: {{dev_token}}
+Content-Type: application/json
+
+{
+  "id": 3,
+  "type": "test",
+  "value": "5",
+  "label": "true",
+  "enabled": true
+}
+
+### 删除字典条目
+DELETE {{base-url}}/api/admin/dict/3
+Authorization: {{dev_token}}

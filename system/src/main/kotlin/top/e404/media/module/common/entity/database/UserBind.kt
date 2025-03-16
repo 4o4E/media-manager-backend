@@ -30,9 +30,9 @@ data class UserBindVo(
 )
 
 @Serializable
-@TableName("sys_user_bind")
+@TableName("sys_user_bind", autoResultMap = true)
 data class UserBindDo(
-    @field:TableId(type = IdType.AUTO)
+    @field:TableId(type = IdType.ASSIGN_ID)
     var id: Long? = null,
     var userId: Long? = null,
     var type: BindType? = null,

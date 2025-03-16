@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.Serializable
 
 @Serializable
-@TableName("sys_user_role")
+@TableName("sys_user_role", autoResultMap = true)
 data class UserRoleDo(
     var userId: Long? = null,
     var roleId: Long? = null,

@@ -39,6 +39,12 @@ spring:
             class: javax.net.ssl.SSLSocketFactory
           starttls:
             enable: true
+  jackson:
+    serialization:
+      fail_on_empty_beans: false
+    deserialization:
+      fail_on_unknown_properties: false
+    defaultPropertyInclusion: NON_EMPTY
 log4jdbc:
   drivers: org.postgresql.Driver
   auto:
@@ -48,6 +54,7 @@ log4jdbc:
   dump:
     sql:
       maxlinelength: 0
+      addsemicolon: true
 
 application:
   base-url: "http://127.0.0.1"
@@ -64,10 +71,6 @@ application:
   media:
     tag:
       rule: "^[^,\\|/$!\\s]+$"
-    mongodb:
-      uri: mongodb://admin:123456@localhost:27017/media?authSource=admin
-      database: media
-      media: media
   files:
     dir: data
 
@@ -75,14 +78,21 @@ logging:
   config: classpath:logback-spring.xml
 
 mybatis-plus:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
   global-config:
     banner: false
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: true
+      logic-not-delete-value: false
 server:
   compression:
     enabled: true
     min-response-size: 2KB
     mime-types: "*/*"
   port: 8000
+
+dev:
+  token: D1F2F24B-84A5-A26E-D6C0-D17C5A9F145E
