@@ -115,6 +115,7 @@ CREATE TABLE IF NOT EXISTS media_content
     tags        BIGINT[]    NOT NULL,
     content     TEXT        NOT NULL,
     sign        CHAR(64)    NOT NULL UNIQUE,
+    like_count  BIGINT      NOT NULL DEFAULT 0,
 
     deleted     BOOLEAN     NOT NULL,
     version     BIGINT      NOT NULL,
@@ -130,6 +131,18 @@ COMMENT ON COLUMN media_content.title IS '标题';
 COMMENT ON COLUMN media_content.tags IS '标签';
 COMMENT ON COLUMN media_content.content IS '内容';
 COMMENT ON COLUMN media_content.sign IS '内容签名, 防止重复';
+COMMENT ON COLUMN media_content.like_count is '喜欢数量';
+
+CREATE TABLE IF NOT EXISTS media_like
+(
+    id          BIGSERIAL   NOT NULL PRIMARY KEY,
+    media_id    BIGINT      NOT NULL,
+    user_id     BIGINT      NOT NULL,
+
+    create_time BIGINT      NOT NULL,
+    UNIQUE (media_id, user_id)
+);
+COMMENT ON TABLE media_like IS '媒体点赞数据';
 
 CREATE TABLE IF NOT EXISTS sys_dict
 (

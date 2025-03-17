@@ -24,6 +24,7 @@ enum class SysPerm(
     MEDIA_EDIT("media:edit", "编辑消息"),
     MEDIA_SKIP_APPROVAL("media:approval:skip", "跳过消息审核"),
     MEDIA_COMMENT_VIEW("media:comment:view", "浏览消息评论", true),
+    MEDIA_COMMENT_LIKE("media:comment:like", "喜欢消息评论", true),
     MEDIA_COMMENT_EDIT("media:comment:edit", "编辑消息评论"),
     MEDIA_COMMENT_POST("media:comment:post", "发送消息评论"),
     FILE_EXISTS("file:exists", "检查文件是否已上传"),

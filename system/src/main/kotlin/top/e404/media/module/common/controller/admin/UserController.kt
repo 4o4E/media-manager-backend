@@ -107,7 +107,7 @@ class UserController {
     @DeleteMapping("/{id}")
     @RequirePerm(SysPerm.USER_EDIT)
     @Operation(summary = "删除用户")
-    @Transactional
+    @Transactional(rollbackFor = [Exception::class, Error::class])
     fun remove(@PathVariable id: Long) {
         if (id == 1L) fail(CommonFail.BAD_OPERATOR, "该用户不可删除")
         userService.removeById(id).toResp()

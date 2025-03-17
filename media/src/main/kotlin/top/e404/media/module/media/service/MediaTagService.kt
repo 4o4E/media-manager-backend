@@ -45,7 +45,7 @@ class MediaTagServiceImpl : MediaTagService, ServiceImpl<MediaTagMapper, MediaTa
         return listBy { orderByAsc(MediaTagDo::id) }.convertList(MediaTagVo::class)
     }
 
-    @Transactional(rollbackFor = [Throwable::class])
+    @Transactional(rollbackFor = [Exception::class, Error::class])
     override fun createTag(dto: MediaTagDto): MediaTagDo {
         val hasExists = exists(dto.names!!)
         if (hasExists) exists("别名")

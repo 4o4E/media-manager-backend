@@ -108,7 +108,7 @@ class AuthServiceImpl : AuthService {
         return LoginVo(userId, token.token!!, token.expireTime!!, roles, perms)
     }
 
-    @Transactional(rollbackFor = [Exception::class])
+    @Transactional(rollbackFor = [Exception::class, Error::class])
     override fun register(dto: RegisterDto): LoginVo {
         val (type, value, username, password) = dto
         if (!passwordRegex.matches(password)) fail(AuthFail.SIMPLE_PASSWORD)

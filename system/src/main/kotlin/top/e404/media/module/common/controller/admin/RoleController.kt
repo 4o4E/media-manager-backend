@@ -107,7 +107,7 @@ class RoleController {
     @DeleteMapping("/{id}")
     @RequirePerm(SysPerm.ROLE_EDIT)
     @Operation(summary = "删除角色")
-    @Transactional
+    @Transactional(rollbackFor = [Exception::class, Error::class])
     fun removeRole(@PathVariable id: Long): BaseResp<Nothing> {
         if (!roleService.remove(id)) notFound("角色")
         return BaseResp.ok()

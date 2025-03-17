@@ -26,6 +26,7 @@ data class MediaContentDo(
     @field:TableField(typeHandler = MediaContentTypeHandler::class)
     var content: List<MediaElement>? = null,
     var sign: String? = null,
+    var likeCount: Long? = null,
 
     @field:TableLogic
     @field:TableField(fill = FieldFill.INSERT)
@@ -62,8 +63,33 @@ data class MediaContentDto(
     @Null(groups = [SaveValid::class])
     @NotNull(groups = [UpdateValid::class])
     var sign: String? = null,
+    @Null(groups = [SaveValid::class, UpdateValid::class], message = "不应由接口更新")
+    var likeCount: Long? = null,
+)
+
+@Serializable
+@Schema(description = "媒体内容")
+data class MediaContentVo(
+    @Null(groups = [SaveValid::class])
+    @NotNull(groups = [UpdateValid::class])
+    var id: Long? = null,
+    @Schema(description = "审核状态")
+    @Null(groups = [SaveValid::class, UpdateValid::class])
+    var auditState: AuditState? = null,
+    @Null(groups = [SaveValid::class])
+    @NotNull(groups = [UpdateValid::class])
+    var type: MediaType? = null,
+    var title: String? = null,
+    @field:TableField(typeHandler = LongListTypeHandler::class)
+    var tags: List<Long>? = null,
+    var content: List<MediaElement>? = null,
+    @Null(groups = [SaveValid::class])
+    @NotNull(groups = [UpdateValid::class])
+    var sign: String? = null,
+    @Null(groups = [SaveValid::class, UpdateValid::class], message = "不应由接口更新")
+    var likeCount: Long? = null,
+    var liked: Boolean? = null,
 )
 
 val mediaListSerializer = ListSerializer(MediaElement.serializer())
-fun MediaContentDo.toDto() = MediaContentDto(id, auditState, type, title, tags, content, sign)
-fun List<MediaContentDo>.toDto() = map { it.toDto() }
+fun MediaContentDo.toDto() = MediaContentDto(id, auditState, type, title, tags, content, sign, likeCount)

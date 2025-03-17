@@ -14,7 +14,7 @@ import top.e404.media.module.common.entity.dto.page.PageResult
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.common.util.convert
 import top.e404.media.module.common.util.toPageResp
-import top.e404.media.module.media.entity.MediaContentDto
+import top.e404.media.module.media.entity.MediaContentVo
 import top.e404.media.module.media.entity.MediaListOption
 import top.e404.media.module.media.service.MediaContentService
 
@@ -31,9 +31,9 @@ class MessageAdminController {
     @Operation(summary = "通过高级查询获取media")
     fun page(
         @RequestBody dto: MediaListOption
-    ): BaseResp<PageResult<MediaContentDto, Void>> {
+    ): BaseResp<PageResult<MediaContentVo, Void>> {
         return messageService.list(dto).toPageResp {
-            it.convert(MediaContentDto::class)
+            it.convert(MediaContentVo::class)
         }
     }
 

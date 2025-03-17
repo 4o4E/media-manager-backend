@@ -16,3 +16,9 @@ inline fun <reified T : Any> IService<T>.updateBy(
 ) = KtUpdateWrapper(T::class.java)
     .apply(update)
     .let { update(entity, it) }
+
+inline fun <reified T : Any> IService<T>.removeBy(
+    query: (KtQueryWrapper<T>.() -> Unit)
+) = KtQueryWrapper(T::class.java)
+    .apply(query)
+    .let { remove(it) }

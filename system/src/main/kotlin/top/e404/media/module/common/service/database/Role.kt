@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import top.e404.media.module.common.annotation.RequirePerm
@@ -60,7 +59,6 @@ class RoleServiceImpl : RoleService, ServiceImpl<RoleMapper, RoleDo>() {
         return getById(roleId)?.perms ?: fail(CommonFail.NOT_FOUND, "角色")
     }
 
-    @Transactional
     override fun remove(id: Long): Boolean {
         return removeById(id)
     }

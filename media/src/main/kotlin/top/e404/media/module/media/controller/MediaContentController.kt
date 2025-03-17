@@ -13,6 +13,7 @@ import top.e404.media.module.common.entity.dto.page.PageInfo
 import top.e404.media.module.common.entity.toResp
 import top.e404.media.module.common.enums.SysPerm
 import top.e404.media.module.media.entity.MediaContentDto
+import top.e404.media.module.media.entity.MediaContentVo
 import top.e404.media.module.media.entity.MessageQueryDto
 import top.e404.media.module.media.entity.comment.MessageComment
 import top.e404.media.module.media.entity.comment.MessageCommentDto
@@ -35,7 +36,7 @@ class MediaContentController {
     @PostMapping("/query")
     @RequirePerm(SysPerm.MEDIA_QUERY)
     @Operation(summary = "通过高级查询获取message")
-    fun queryMessage(@RequestBody dto: MessageQueryDto): BaseResp<List<MediaContentDto>> {
+    fun queryMessage(@RequestBody dto: MessageQueryDto): BaseResp<List<MediaContentVo>> {
         return mediaContentService.query(dto).toResp()
     }
 
@@ -43,7 +44,7 @@ class MediaContentController {
     @GetMapping("/random")
     @RequirePerm(SysPerm.MEDIA_RANDOM)
     @Operation(summary = "随机获取message")
-    fun listMessage(@Validated @Max(20) count: Long): BaseResp<List<MediaContentDto>> {
+    fun listMessage(@Validated @Max(20) count: Long): BaseResp<List<MediaContentVo>> {
         return mediaContentService.random(count).toResp()
     }
 
@@ -61,6 +62,24 @@ class MediaContentController {
     @Operation(summary = "更新message", description = "上传message前需要先上传二进制文件")
     fun updateMessage(@RequestBody dto: MediaContentDto): BaseResp<Unit> {
         return mediaContentService.update(dto).toResp()
+    }
+
+    // 点赞
+
+    @LogAccess
+    @PostMapping("/{mediaId}/like")
+    @RequirePerm(SysPerm.MEDIA_COMMENT_LIKE)
+    @Operation(summary = "喜欢")
+    fun like(@PathVariable mediaId: Long): BaseResp<Unit> {
+        return mediaContentService.like(mediaId).toResp()
+    }
+
+    @LogAccess
+    @PostMapping("/{mediaId}/undoLike")
+    @RequirePerm(SysPerm.MEDIA_COMMENT_LIKE)
+    @Operation(summary = "取消喜欢")
+    fun undoLike(@PathVariable mediaId: Long): BaseResp<Unit> {
+        return mediaContentService.undoLike(mediaId).toResp()
     }
 
     // 评论
