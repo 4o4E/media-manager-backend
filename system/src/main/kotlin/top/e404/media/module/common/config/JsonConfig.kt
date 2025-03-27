@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import kotlinx.serialization.json.Json
 import org.springframework.context.annotation.Bean
+import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter
 import org.springframework.stereotype.Component
 
 
@@ -24,6 +25,9 @@ class JsonConfig {
 
     @get:Bean
     val json get() = Companion.json
+
+    @get:Bean
+    val ktxJson get() = KotlinSerializationJsonHttpMessageConverter(json)
 
 
     @Bean
