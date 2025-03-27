@@ -51,8 +51,7 @@ class AccessAdvice {
                     if (index > 0) append(", ")
                     append(parameter.name)
                         .append(": ")
-                        .append(joinPoint.args[index]?.let { if (it is Serializable || it is JavaSerializable) it.toJsonString() else it.javaClass.name }
-                            ?: "null")
+                        .append(joinPoint.args[index]?.let { (it as? Serializable)?.toJsonString() ?: it.javaClass.name ?: "null" })
                 }
                 append("]")
             })
