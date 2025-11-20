@@ -45,16 +45,11 @@ spring:
     deserialization:
       fail_on_unknown_properties: false
     defaultPropertyInclusion: NON_EMPTY
-log4jdbc:
-  drivers: org.postgresql.Driver
-  auto:
-    load:
-      popular:
-        drivers: false
-  dump:
-    sql:
-      maxlinelength: 0
-      addsemicolon: true
+decorator:
+  datasource:
+    p6spy:
+      logging: SLF4J
+      log-format: "%(sqlSingleLine)"
 
 application:
   base-url: "http://127.0.0.1"

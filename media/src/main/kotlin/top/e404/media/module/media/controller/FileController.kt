@@ -24,7 +24,7 @@ class FileController {
     @set:Autowired
     lateinit var fileService: FileService
 
-    @LogAccess
+    @LogAccess(detail = false)
     @GetMapping("/{id}")
     @Operation(summary = "通过文件id获取文件")
     fun getFileById(@PathVariable @Parameter(description = "文件id") id: String, resp: HttpServletResponse) {

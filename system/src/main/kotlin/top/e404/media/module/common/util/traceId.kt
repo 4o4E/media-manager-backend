@@ -8,3 +8,6 @@ var traceId: String?
     set(value) {
         MDC.put(TRACE_ID_KEY, value)
     }
+fun clearTraceId() {
+    MDC.remove(TRACE_ID_KEY)
+}

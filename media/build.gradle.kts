@@ -17,9 +17,6 @@ dependencies {
     // kbson
     implementation("com.github.jershell:kbson:0.5.0")
 
-    // mongodb
-    implementation("org.mongodb:mongodb-driver-sync:5.1.2")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(rootProject)
 }

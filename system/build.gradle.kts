@@ -19,7 +19,6 @@ repositories {
 fun kotlinx(id: String, version: String = "2.0.20") = "org.jetbrains.kotlinx:kotlinx-$id:$version"
 
 dependencies {
-    // implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     api("org.springframework.boot:spring-boot-starter-jdbc")
     api("org.springframework.boot:spring-boot-starter-mail")
     api("org.springframework.boot:spring-boot-starter-quartz")
@@ -45,9 +44,8 @@ dependencies {
     // bcrypt
     implementation("at.favre.lib:bcrypt:0.10.2")
 
-    // skiko
-    api("org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.8.9")
-    api("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.8.9")
+    // p6spy
+    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(rootProject)

@@ -36,15 +36,8 @@
         </rollingPolicy>
     </appender>
 
-    <logger level="debug" name="jdbc.sqlonly"/>
-    <logger level="off" name="jdbc.audit"/>
-    <logger level="off" name="jdbc.sqltiming"/>
-    <logger level="off" name="jdbc.resultset"/>
-    <logger level="off" name="jdbc.resultsettable"/>
-    <logger level="off" name="jdbc.connection"/>
     <logger level="off" name="com.baomidou.mybatisplus.core.injector.DefaultSqlInjector"/>
 
-    <logger level="warn" name="org.mongodb"/>
     <logger level="warn" name="org.quartz"/>
     <logger level="warn" name="org.apache.catalina"/>
     <logger level="warn" name="org.springframework.scheduling.quartz"/>
@@ -53,6 +46,11 @@
     <logger level="warn" name="org.apache.coyote.http11.Http11NioProtocol"/>
 
     <logger level="debug" name="top.e404" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger level="INFO" name="p6spy" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>

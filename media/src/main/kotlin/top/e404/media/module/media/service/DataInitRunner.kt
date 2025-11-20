@@ -9,7 +9,6 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
-import org.jetbrains.skia.Image
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -26,6 +25,7 @@ import top.e404.media.module.media.entity.data.ImageElement
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.imageio.ImageIO
 
 /**
  * 初始化数据库数据
@@ -69,7 +69,7 @@ class DataInitRunner : ApplicationRunner {
             val bytes = image.readBytes()
             val id = fileService.upload(bytes)
             val format = image.name.substringAfterLast(".")
-            val img = Image.makeFromEncoded(bytes)
+            val img = ImageIO.read(store.resolve(name))
             mediaContentService.import(
                 mutableListOf(ImageElement(id, format, false, img.width, img.height)),
                 pic.tags.map { tag ->

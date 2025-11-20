@@ -1,6 +1,4 @@
-import org.gradle.model.internal.core.ModelNodes.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot") version "3.3.3"
@@ -34,7 +32,6 @@ repositories {
 dependencies {
     implementation(project(":system"))
     implementation(project(":media"))
-    implementation("ru.vasiand:spring-boot-starter-log4jdbc:1.2.0")
 }
 
 idea {

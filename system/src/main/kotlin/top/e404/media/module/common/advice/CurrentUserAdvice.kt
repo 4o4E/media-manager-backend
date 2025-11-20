@@ -3,6 +3,7 @@ package top.e404.media.module.common.advice
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.annotation.Order
@@ -16,7 +17,6 @@ import top.e404.media.module.common.entity.database.UserTokenDo
 import top.e404.media.module.common.service.database.RoleService
 import top.e404.media.module.common.service.database.UserService
 import top.e404.media.module.common.service.database.UserTokenService
-import top.e404.media.module.common.util.log
 import top.e404.media.module.common.util.query
 import top.e404.media.module.common.util.toJsonString
 import java.util.concurrent.ConcurrentHashMap
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Order(1)
 @Component
 class CurrentUserAdvice {
-    private val log = log()
+    private val log = LoggerFactory.getLogger("currentUser")
 
     @set:Autowired
     lateinit var userService: UserService
