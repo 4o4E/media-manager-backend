@@ -2,6 +2,7 @@
   <configuration default="false" name="App" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <module name="media-manager-backend.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="top.e404.media.App" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/.run" />
     <method v="2">
       <option name="Make" enabled="true" />
